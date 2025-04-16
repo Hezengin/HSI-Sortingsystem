@@ -1,4 +1,4 @@
-from app import ConfigurationApp
+from app import run_app
 
 if __name__ == "__main__":
-    app = ConfigurationApp()
+    run_app()
