@@ -40,7 +40,7 @@ def stop_datacube(ui_context):
         return
 
     cube = cam.stop_acquire()
-    folder = "Pictures"
+    folder = "Datacubes"
     os.makedirs(folder, exist_ok=True)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -88,7 +88,7 @@ def extract_picture(ui_context, band, output_filename="band_output.png"):
         return
 
     # Load the saved cube
-    cube_path = "Pictures/cube_output.npy"  # Ensure this matches your save path
+    cube_path = "DataCubes/cube_output.npy"  # Ensure this matches your save path
     if not os.path.exists(cube_path):
         ui_context["message_box"]("[ERROR] No datacube found. Capture one first.")
         return
@@ -102,7 +102,7 @@ def extract_picture(ui_context, band, output_filename="band_output.png"):
     band_image = cube[:, :, band]
 
     # Save the band as an image
-    output_path = os.path.join("Pictures", output_filename)
+    output_path = os.path.join("DataCubes", output_filename)
     plt.imsave(output_path, band_image, cmap="gray")
     ui_context["log_func"](f"[INFO] Band {band} saved as {output_path}.")
 

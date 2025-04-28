@@ -43,7 +43,3 @@ def disconnect(ui_context, dpg):
     dpg.configure_item("disconnect_button",show=False)
     dpg.configure_item("connect_button",show=True)
     dpg.configure_item("connection_bullet", color=(255,0,0))
-
-    
-
-

@@ -51,7 +51,9 @@ def run_gui():
                 cmaps = plt.colormaps()
                 dpg.add_text("Select a colormap")
                 dpg.add_combo(cmaps, tag="cmap_dropdown", width=100, default_value="magma")
-            dpg.add_button(label="Show Image", callback=lambda: extractor.extract_image(ui_context, dpg.get_value("band_input"), dpg.get_value("cmap_dropdown")))
+            with dpg.group(horizontal=True):
+                dpg.add_button(label="Show Image", callback=lambda: extractor.extract_image(ui_context, dpg.get_value("band_input"), dpg.get_value("cmap_dropdown")))
+                dpg.add_button(label="Save Image", callback=lambda: extractor.save_image(ui_context, dpg.get_value("band_input"), dpg.get_value("cmap_dropdown")))
         
         dpg.add_spacer(height=10)
         dpg.add_button(label="Close App", callback=lambda: camera_helper.close(ui_context))
