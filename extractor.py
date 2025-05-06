@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from log_levels import LogLevel
 import os
+import cv2 as cv
 
 def extract_image(ui_context, band, cmap):
     cube_data = np.load("Datacubes/cube_output_appel.npy", allow_pickle=True)
@@ -48,5 +49,14 @@ def save_image(ui_context, band , cmap):
     ui_context["log_func"](LogLevel.INFO, f"Image saved band: {band}, cmap: {cmap}")
     
 def cube_shrinker(ui_context):
+    cube_data = np.load("Datacubes/cube_output_appel.npy", allow_pickle=True)
+    if cube_data.ndim != 3:
+        ui_context["log_func"](LogLevel.ERROR, "Loaded datacube is not a 3D array.")
+        return
     
-    ui_context["log_func"](LogLevel.INFO, f"Image saved band:")
+    gray = cv.cvtColor(cube_data,cv.COLOR_BGR2GRAY)
+    ret, thresh = cv.threshold(gray,0,255,cv.THRESH_BINARY_INV+cv.THRESH_OTSU)
+    
+    
+    
+    # ui_context["log_func"](LogLevel.INFO, f"Image saved band:")
