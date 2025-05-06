@@ -7,7 +7,7 @@ from log_levels import LogLevel
 import os
 
 def extract_image(ui_context, band, cmap):
-    cube_data = np.load("Pictures/cube_output_appel.npy", allow_pickle=True)
+    cube_data = np.load("Datacubes/cube_output_appel.npy", allow_pickle=True)
     
     # Data validation
     if cube_data.ndim != 3:
@@ -47,3 +47,6 @@ def save_image(ui_context, band , cmap):
     
     ui_context["log_func"](LogLevel.INFO, f"Image saved band: {band}, cmap: {cmap}")
     
+def cube_shrinker(ui_context):
+    
+    ui_context["log_func"](LogLevel.INFO, f"Image saved band:")
