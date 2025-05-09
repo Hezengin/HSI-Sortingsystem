@@ -8,35 +8,43 @@ import os
 import cv2 as cv
 
 def extract_image(ui_context, band, cmap):
-    cube_data = np.load("Datacubes/cube_output_appel.npy", allow_pickle=True)
-    
-    # Data validation
-    if cube_data.ndim != 3:
-        ui_context["log_func"](LogLevel.ERROR, "Loaded datacube is not a 3D array.")
-        return
+    try:
+        cube_data = np.load("Datacubes/09_05_2025/data_cube_20250509_151914.npy", allow_pickle=True)
+        ui_context["log_func"](LogLevel.INFO,f"Datacube loaded")
+
+        # Data validation
+        if cube_data.ndim != 3:
+            ui_context["log_func"](LogLevel.ERROR, "Corrupted Datacube file. Loaded datacube is not a 3D array.")
+            return
         
-    num_bands = cube_data.shape[1]
-    band_index = int(band)
-    
-    if band_index < 0 or band_index >= num_bands:
-        ui_context["log_func"](LogLevel.ERROR, f"Band index {band_index} is out of bounds (0-{num_bands-1}).")
-        return
+        num_bands = cube_data.shape[1]
+        strings = band.split(' - ')
+        band_index = int(strings[1])
+        
+        if band_index < 0 or band_index >= num_bands:
+            ui_context["log_func"](LogLevel.ERROR, f"Band index {band_index} is out of bounds (0-{num_bands-1}).")
+            return
 
-    # Process image data
-    band_data = cube_data[:, band_index, :]
-    normalized_band = (band_data - band_data.min()) / (band_data.max() - band_data.min())
-    ui_context["log_func"](LogLevel.INFO, f"Processing band {band_index} with {cmap} colormap")
+        # Process image data
+        band_data = cube_data[:, band_index, :]
+        normalized_band = (band_data - band_data.min()) / (band_data.max() - band_data.min())
+        ui_context["log_func"](LogLevel.INFO, f"Processing band {band_index} with {cmap} colormap")
 
-    # Create and save plot
-    fig = Figure()
-    ax = fig.subplots()
-    img = ax.imshow(normalized_band, cmap=cmap, origin='lower')
-    fig.colorbar(img, label='Intensity')
-    ax.set_title(f'Band {band_index}')
-    
-    temp_image_path = "temp_plot.png"
-    fig.savefig(temp_image_path)
-    plt.close(fig)
+        # Create and save plot
+        fig = Figure()
+        ax = fig.subplots()
+        img = ax.imshow(normalized_band, cmap=cmap, origin='lower')
+        fig.colorbar(img, label='Intensity')
+        ax.set_xlabel('Pixels')
+        ax.set_ylabel('Lines scanned')
+        ax.set_title(f'Band {band_index} - ColorMap {cmap}')
+        
+        temp_image_path = "temp_plot.png"
+        fig.savefig(temp_image_path)
+        plt.close(fig)
+        
+    except FileNotFoundError as e:
+        ui_context["log_func"](LogLevel.ERROR,f"Datacube file not found.")
         
 def save_image(ui_context, band , cmap):
     temp_image_path = "temp_plot.png"
@@ -49,14 +57,12 @@ def save_image(ui_context, band , cmap):
     ui_context["log_func"](LogLevel.INFO, f"Image saved band: {band}, cmap: {cmap}")
     
 def cube_shrinker(ui_context):
-    cube_data = np.load("Datacubes/cube_output_appel.npy", allow_pickle=True)
+    cube_data = np.load("Datacubes/data_cube_20250507_163145.npy", allow_pickle=True)
     if cube_data.ndim != 3:
         ui_context["log_func"](LogLevel.ERROR, "Loaded datacube is not a 3D array.")
         return
     
     gray = cv.cvtColor(cube_data,cv.COLOR_BGR2GRAY)
     ret, thresh = cv.threshold(gray,0,255,cv.THRESH_BINARY_INV+cv.THRESH_OTSU)
-    
-    
-    
+
     # ui_context["log_func"](LogLevel.INFO, f"Image saved band:")

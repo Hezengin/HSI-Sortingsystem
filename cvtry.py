@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-im = cv.imread('C:/Users/Eren/source/HSI-Sortingsystem/temp_plot.png')
+im = cv.imread('temp_plot.png')
 assert im is not None, "file could not be read, check with os.path.exists()"
 imgray = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
 ret, thresh = cv.threshold(imgray, 85, 255, 0)

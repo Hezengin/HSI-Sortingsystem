@@ -8,6 +8,8 @@ def connect(ui_context, dpg):
         ui_context["camera_data"]["system"] = GCSystem()
     
     system = ui_context["camera_data"]["system"]
+    system.__init__()
+
     if ui_context["camera_data"].get("cam") is None or ui_context["camera_data"].get("intf") is None:
         # Discover the camera and interface
         cam, intf = system.discover(FX10)
@@ -27,19 +29,41 @@ def connect(ui_context, dpg):
 
             # When the camera connects init the button for it too
             dpg = ui_context["dpg"]
-            dpg.add_button(label="Disconnect FX10", tag="disconnect_button", callback=lambda: disconnect(ui_context, dpg), parent="connection_group")
             dpg.configure_item("connect_button",show=False)
+            # dpg.configure_item("disconnect_button",show=True)
             dpg.configure_item("connection_bullet", color=(0,255,0))
     else:
         ui_context["log_func"](LogLevel.WARNING,"Already connected to the camera")
 
 def disconnect(ui_context, dpg):
     dpg = ui_context["dpg"]
-    dpg.configure_item("test", show=False)
-    if ui_context["set_connection_status"].get("set_connection_status") is True:
-        cam = ui_context["camera_data"].get("cam")
-        cam.close_stream()
+    system = ui_context["camera_data"]["system"]
+    cam = ui_context["camera_data"].get("cam")
 
-    dpg.configure_item("disconnect_button",show=False)
-    dpg.configure_item("connect_button",show=True)
-    dpg.configure_item("connection_bullet", color=(255,0,0))
+    if cam:
+        try:
+            cam.close_stream()  # Close the stream if open
+        except Exception as e:
+            ui_context["log_func"](LogLevel.WARNING, f"Error while closing stream: {e}")
+
+        try:
+            cam.close()  # Close the camera connection
+        except Exception as e:
+            ui_context["log_func"](LogLevel.WARNING, f"Error while closing camera: {e}")
+
+        try:
+            system.close()  # Close the system (optional, depending on implementation)
+        except Exception as e:
+            ui_context["log_func"](LogLevel.WARNING, f"Error while closing system: {e}")
+
+        # Reset the context
+        ui_context["camera_data"]["cam"] = None
+        ui_context["camera_data"]["intf"] = None
+        ui_context["set_connection_status"](False)
+        ui_context["log_func"](LogLevel.INFO, "Camera is Disconnected")
+    else:
+        ui_context["log_func"](LogLevel.WARNING, "No camera was connected")
+
+    dpg.configure_item("disconnect_button", show=False)
+    dpg.configure_item("connect_button", show=True)
+    dpg.configure_item("connection_bullet", color=(255, 0, 0))
