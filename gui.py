@@ -54,7 +54,7 @@ def run_gui():
                 bands = bands_file.read()
                 dropdown = bands.split(",")
 
-                dpg.add_combo(dropdown, tag="nm_dropdown", width=100, default_value='397.66 - 0')
+                dpg.add_combo(dropdown, tag="nm_dropdown", width=110, default_value='529.59 - 50')
                 
             with dpg.group(horizontal=True):
                 cmaps = plt.colormaps()
