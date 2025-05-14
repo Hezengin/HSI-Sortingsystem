@@ -34,13 +34,18 @@ def extract_image(ui_context, band, cmap):
         fig = Figure()
         ax = fig.subplots()
         img = ax.imshow(normalized_band, cmap=cmap, origin='lower')
-        fig.colorbar(img, label='Intensity')
+        
+        ax.axis('off') # Turn axes back off for clean image
+        fig.savefig("temp_plot_clean.png", dpi=300, bbox_inches='tight', pad_inches=0) # empty with only picture for cv development
+        
+        ax.axis('on')  # Turn axes back on for detailed image
         ax.set_xlabel('Pixels')
         ax.set_ylabel('Lines scanned')
         ax.set_title(f'Band {band_index} - ColorMap {cmap}')
-        
-        temp_image_path = "temp_plot.png"
-        fig.savefig(temp_image_path)
+        fig.colorbar(img, label='Intensity')
+
+        # Save the full plot with info
+        fig.savefig("temp_plot_info.png")
         plt.close(fig)
         
     except FileNotFoundError as e:
