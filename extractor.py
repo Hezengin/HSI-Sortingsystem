@@ -52,7 +52,7 @@ def extract_image(ui_context, band, cmap):
         ui_context["log_func"](LogLevel.ERROR,f"Datacube file not found.")
         
 def save_image(ui_context, band , cmap):
-    temp_image_path = "temp_plot.png"
+    temp_image_path = "temp_plot_clean.png"
     img = plt.imread(temp_image_path)
     os.makedirs('Pictures', exist_ok=True)
     
