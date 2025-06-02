@@ -35,7 +35,7 @@ def generate_rgb_composite(data_cube, bands, red_range=(620, 750), green_range=(
     return rgb_composite
 
 # Example usage
-data_cube = np.load('Datacubes/09_05_2025/data_cube_20250509_151914.npy', allow_pickle=True)
+data_cube = np.load('Datacubes/09_05_2025/data_cube_20250509_151112.npy', allow_pickle=True)
 bands = np.genfromtxt('bands/bands.csv', delimiter=',')  # Load the bands
 red_range = (620, 750)  # Define the wavelength range for red
 
@@ -135,13 +135,23 @@ contours, _ = cv.findContours(mask_inv, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE
 # Sorteer op grootte (grootste eerst)
 contours = sorted(contours, key=cv.contourArea, reverse=True)
 
+print(len(contours))
+
+image_with_boxes = rgb_uint8.copy()  # or your original imag
+    
+cv.imshow('Rectangles Around Contours', image_with_boxes)
+cv.waitKey(0)
+cv.destroyAllWindows()
+
 # Kies de grootste (of eerste)
 if contours:
     largest_contour = contours[0]
-    x, y, w, h = cv.boundingRect(largest_contour)
-
-    # Debug: Toon bounding box op RGB-afbeelding
+    x, y, w, h = cv.boundingRect(largest_contour)    # Debug: Toon bounding box op RGB-afbeelding
     img_copy = rgb_uint8.copy()
+    
+    area = cv.contourArea(contours[0])
+    print(area)
+    
     cv.rectangle(img_copy, (x, y), (x + w, y + h), (0, 255, 0), 2)
     plt.imshow(cv.cvtColor(img_copy, cv.COLOR_RGB2BGR))
     plt.title("Bounding Box van grootste aardbei")

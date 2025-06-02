@@ -1,6 +1,6 @@
 from lib.spectralcam.gentl.gentl import GCSystem
 from lib.spectralcam.specim.fx10 import FX10
-from log_levels import LogLevel
+from util.log_levels import LogLevel
 
 def connect(ui_context, dpg):
     # Check if there's no camera system yet, and if so, create a new GCSystem

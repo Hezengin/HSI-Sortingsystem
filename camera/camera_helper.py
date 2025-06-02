@@ -3,7 +3,7 @@ import time
 import threading
 import numpy as np
 from datetime import datetime
-from log_levels import LogLevel
+from util.log_levels import LogLevel
 
 # === Camera Operation Functions ===
 

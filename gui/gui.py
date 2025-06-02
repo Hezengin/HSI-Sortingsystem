@@ -1,9 +1,9 @@
 import dearpygui.dearpygui as dpg
-import camera_connection
-import camera_helper
-from log_levels import LogLevel
+import camera.camera_connection as camera_connection
+import camera.camera_helper as camera_helper
+from util.log_levels import LogLevel
 import matplotlib.pyplot as plt
-import extractor
+import util.extractor as extractor
 
 def run_gui():
     

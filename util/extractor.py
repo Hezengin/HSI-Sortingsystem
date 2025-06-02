@@ -3,13 +3,13 @@ import matplotlib
 matplotlib.use('Agg')  # non-GUI backend so it doesnt crash becuz dearpygui and matplotlib both must run on the main thread and i couldnt figure that out
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
-from log_levels import LogLevel
+from util.log_levels import LogLevel
 import os
 import cv2 as cv
 
 def extract_image(ui_context, band, cmap):
     try:
-        cube_data = np.load("DataCubes/09_05_2025/data_cube_20250509_151112.npy", allow_pickle=True)
+        cube_data = np.load("DataCubes/Crops/crop_29.npy", allow_pickle=True)
         ui_context["log_func"](LogLevel.INFO,f"Datacube loaded")
 
         # Data validation
