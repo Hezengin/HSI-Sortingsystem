@@ -74,42 +74,5 @@ def create_datacube_with_duration(ui_context, preview=True, duration=2):
         stop_datacube(ui_context)
 
     threading.Thread(target=worker, daemon=True).start()
-
-# def testFunction(ui_context):
-#     ui_context["log_func"](LogLevel.INFO,"Starting datacube acquisition for TEST seconds...")
-#     dpg = ui_context["dpg"]
-#     dpg.configure_item("test", show=False)
-
-# def extract_picture(ui_context, band, output_filename="band_output.png"):
-#     """Extracts a specific band from the hyperspectral cube and saves it as an image."""
-#     cam = ui_context["camera_data"].get("cam")
-#     if not cam:
-#         ui_context["message_box"]("[ERROR] No camera connected.")
-#         return
-
-#     # Load the saved cube
-#     cube_path = "DataCubes/cube_output.npy"  # Ensure this matches your save path
-#     if not os.path.exists(cube_path):
-#         ui_context["message_box"]("[ERROR] No datacube found. Capture one first.")
-#         return
-
-#     cube = np.load(cube_path)
-#     if band < 0 or band >= cube.shape[1]:
-#         ui_context["message_box"](f"[ERROR] Band index {band} is out of range. Valid range: 0-{cube.shape[1]-1}.")
-#         return
-
-#     # Extract the specific band
-#     band_image = cube[:, :, band]
-
-#     # Save the band as an image
-#     output_path = os.path.join("DataCubes", output_filename)
-#     plt.imsave(output_path, band_image, cmap="gray")
-#     ui_context["log_func"](f"[INFO] Band {band} saved as {output_path}.")
-
 def close():
     os._exit(0)
-
-
-
-
-        

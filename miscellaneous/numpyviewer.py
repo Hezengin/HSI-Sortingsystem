@@ -5,7 +5,7 @@ import glob
 
 # print(datacube.shape)
 
-list = sorted(glob.glob('DataCubes/**/*.npy'))
+list = sorted(glob.glob('DataCubes/**/*.npy', recursive=True))
 print(list)
 
 # # Gets the datacubes list from files and put them in a list for combobox to view

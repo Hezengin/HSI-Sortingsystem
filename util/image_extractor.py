@@ -1,10 +1,10 @@
+import os
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')  # non-GUI backend so it doesnt crash becuz dearpygui and matplotlib both must run on the main thread and i couldnt figure that out
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from util.log_levels import LogLevel
-import os
 import cv2 as cv
 
 def extract_image(ui_context, datacube_path, band, cmap):

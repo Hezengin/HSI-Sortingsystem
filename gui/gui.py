@@ -3,7 +3,8 @@ import camera.camera_connection as camera_connection
 import camera.camera_helper as camera_helper
 from util.log_levels import LogLevel
 import matplotlib.pyplot as plt
-import util.extractor as extractor
+import util.image_extractor as image_extractor
+import util.datacube_extractor as datacube_extractor
 
 def run_gui():
     
@@ -41,6 +42,19 @@ def run_gui():
                 dpg.add_button(label="Make DataCube with duration", callback=lambda: camera_helper.create_datacube_with_duration(ui_context, True, dpg.get_value("duration_input")))
                 dpg.add_input_text(label="duration (in seconds)",tag="duration_input", default_value= 2, width=50)
             dpg.add_button(label="Save the Datacube", callback=lambda: camera_helper.stop_datacube(ui_context))
+            
+        # DATACUBE EXTRACTOR OPERATIONS WINDOW
+        dpg.add_text("Datacube extractor")
+        dpg.add_child_window(tag="datacube_extractor_window", autosize_x=True, height=60)
+        with dpg.group(horizontal=False, parent="datacube_extractor_window"):
+            
+            # DATACUBE STRAWBERRY EXTRACTOR 
+            with dpg.group(horizontal=True, ):
+                dpg.add_text("Datacube to extract strawberries from: ")
+                dpg.add_combo(datacube_getter_for_extractor(), tag="datacubes_extractor_combobox", width=275, default_value=datacube_getter_for_extractor()[0])
+                dpg.add_button(label="Refresh",tag="refresh_extractor" , callback=lambda: refresh_comboboxes())
+            
+            dpg.add_button(label="Extract", callback=lambda: datacube_extractor.extractor(ui_context, dpg.get_value("datacubes_extractor_combobox")))
 
         # IMAGE VIEWER WINDOW
         dpg.add_text("Image Viewer")
@@ -50,7 +64,8 @@ def run_gui():
             # DATACUBE COMBOBOX AND TEXT
             with dpg.group(horizontal=True):
                 dpg.add_text("Select a datacube to show: ")
-                dpg.add_combo(datacube_getter(), tag="datacubes_list", width=300, default_value=datacube_getter()[0])
+                dpg.add_combo(datacube_getter(), tag="datacubes_combobox", width=300, default_value=datacube_getter()[0])
+                dpg.add_button(label="Refresh",tag="refresh_imageviewer", callback=lambda: refresh_comboboxes())
             
             # NANOMETER RANGE SELECTION COMBOBOX
             dpg.add_text("Default is band 50 and colormap magma.")
@@ -72,8 +87,8 @@ def run_gui():
                 
             # FUNCTION BUTTONS
             with dpg.group(horizontal=True):
-                dpg.add_button(label="Show Image", callback=lambda: extractor.extract_image(ui_context, dpg.get_value("datacubes_list"),dpg.get_value("nm_dropdown"), dpg.get_value("cmap_dropdown")))
-                dpg.add_button(label="Save Image", callback=lambda: extractor.save_image(ui_context, dpg.get_value("nm_dropdown"), dpg.get_value("cmap_dropdown")))
+                dpg.add_button(label="Show Image", callback=lambda: image_extractor.extract_image(ui_context, dpg.get_value("datacubes_combobox"),dpg.get_value("nm_dropdown"), dpg.get_value("cmap_dropdown")))
+                dpg.add_button(label="Save Image", callback=lambda: image_extractor.save_image(ui_context, dpg.get_value("nm_dropdown"), dpg.get_value("cmap_dropdown")))
         
         
         # LOG WINDOW
@@ -84,7 +99,7 @@ def run_gui():
             dpg.add_button(label="Close App", callback=lambda: camera_helper.close())
 
     # GENERAL SETTINGS OF GUI
-    dpg.create_viewport(title='HSI GUI', width=570, height=570)
+    dpg.create_viewport(title='HSI GUI', width=700, height=600)
     dpg.setup_dearpygui()
     dpg.set_primary_window("main_window", True)
     dpg.show_viewport()
@@ -111,7 +126,18 @@ def set_connection_status(connected: bool):
     
 import glob
 
+# This must be only whole datacube not crops, since the naming starts with data_cube we can filter by name.
+def datacube_getter_for_extractor():
+    list = sorted(glob.glob('DataCubes/**/data_cube**.npy'))
+    return list
+
 # Gets the datacubes list from files and put them in a list for combobox to view
 def datacube_getter():
-    list = sorted(glob.glob('DataCubes/**/*.npy'))
+    list = sorted(glob.glob('DataCubes/**/*.npy', recursive=True))
     return list
+
+def refresh_comboboxes():
+    new_items = datacube_getter()
+    dpg.configure_item("datacubes_combobox", items=new_items)
+    new_items = datacube_getter_for_extractor()
+    dpg.configure_item("datacubes_extractor_combobox", items=new_items)
