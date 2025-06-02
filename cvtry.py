@@ -2,12 +2,16 @@ import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
 
-im = cv.imread('Pictures/861.14 - 172_twilight_shifted.png')
+im = cv.imread('temp_plot_clean.png')
 assert im is not None, "file could not be read, check with os.path.exists()"
 
 # Convert the image to grayscale
 imgray = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
 ret, thresh = cv.threshold(imgray, 80, 255, 0)
+
+cv.imshow('imgray ', imgray)
+print(ret)
+cv.imshow('thresh', thresh)
 
 contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 

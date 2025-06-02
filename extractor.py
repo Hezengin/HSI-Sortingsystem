@@ -9,7 +9,7 @@ import cv2 as cv
 
 def extract_image(ui_context, band, cmap):
     try:
-        cube_data = np.load("Datacubes/09_05_2025/data_cube_20250509_151914.npy", allow_pickle=True)
+        cube_data = np.load("DataCubes/09_05_2025/data_cube_20250509_151112.npy", allow_pickle=True)
         ui_context["log_func"](LogLevel.INFO,f"Datacube loaded")
 
         # Data validation
@@ -62,12 +62,4 @@ def save_image(ui_context, band , cmap):
     ui_context["log_func"](LogLevel.INFO, f"Image saved band: {band}, cmap: {cmap}")
     
 def cube_shrinker(ui_context):
-    cube_data = np.load("Datacubes/data_cube_20250507_163145.npy", allow_pickle=True)
-    if cube_data.ndim != 3:
-        ui_context["log_func"](LogLevel.ERROR, "Loaded datacube is not a 3D array.")
-        return
-    
-    gray = cv.cvtColor(cube_data,cv.COLOR_BGR2GRAY)
-    ret, thresh = cv.threshold(gray,0,255,cv.THRESH_BINARY_INV+cv.THRESH_OTSU)
-
-    # ui_context["log_func"](LogLevel.INFO, f"Image saved band:")
+    temp_image_path = "temp_plot_clean.png"
