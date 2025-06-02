@@ -7,10 +7,10 @@ from util.log_levels import LogLevel
 import os
 import cv2 as cv
 
-def extract_image(ui_context, band, cmap):
-    try:
-        cube_data = np.load("DataCubes/Crops/crop_29.npy", allow_pickle=True)
-        ui_context["log_func"](LogLevel.INFO,f"Datacube loaded")
+def extract_image(ui_context, datacube_path, band, cmap):
+    try:  
+        cube_data = np.load(datacube_path, allow_pickle=True)
+        ui_context["log_func"](LogLevel.INFO,f"Datacube loaded: {datacube_path}")
 
         # Data validation
         if cube_data.ndim != 3:
