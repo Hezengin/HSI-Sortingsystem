@@ -25,7 +25,7 @@ def extractor(ui_context, path):
     # Extract timestamp from filename
     base_dir = os.path.dirname(path)
     filename = os.path.basename(path)
-    match = re.search(r"data_cube_(\d{8}_\d{6})", filename)
+    match = re.search(r"dc_(\d{8}_\d{6})", filename)
     if match:
         timestamp = match.group(1)
         folder_name = f"Cropped_{timestamp}"
