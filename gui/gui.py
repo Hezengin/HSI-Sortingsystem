@@ -128,7 +128,7 @@ import glob
 
 # This must be only whole datacube not crops, since the naming starts with data_cube we can filter by name.
 def datacube_getter_for_extractor():
-    list = sorted(glob.glob('DataCubes/**/data_cube**.npy'))
+    list = sorted(glob.glob('DataCubes/**/dc_**.npy'))
     return list
 
 # Gets the datacubes list from files and put them in a list for combobox to view
