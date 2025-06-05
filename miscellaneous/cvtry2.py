@@ -35,7 +35,7 @@ def generate_rgb_composite(data_cube, bands, red_range=(620, 750), green_range=(
     return rgb_composite
 
 # Example usage
-data_cube = np.load('Datacubes/09_05_2025/data_cube_20250509_151112.npy', allow_pickle=True)
+data_cube = np.load('DataCubes/04_06_2025/dc_04062025_133054.npy', allow_pickle=True)
 bands = np.genfromtxt('bands/bands.csv', delimiter=',')  # Load the bands
 red_range = (620, 750)  # Define the wavelength range for red
 
@@ -95,36 +95,36 @@ cv.waitKey(0)
 cv.destroyAllWindows()
 
 
-# def nothing(x):
-#     pass
-
-# # while True:
-# cv.namedWindow('Trackbars')
-# cv.createTrackbar('LowH', 'Trackbars', 0, 179, nothing)
-# cv.createTrackbar('HighH', 'Trackbars', 120, 179, nothing)
-# cv.createTrackbar('LowS', 'Trackbars', 20, 255, nothing)
-# cv.createTrackbar('HighS', 'Trackbars', 255, 255, nothing)
-# cv.createTrackbar('LowV', 'Trackbars', 0, 255, nothing)
-# cv.createTrackbar('HighV', 'Trackbars', 157, 255, nothing)
+def nothing(x):
+    pass
 
 # while True:
-#     low_h = cv.getTrackbarPos('LowH', 'Trackbars')
-#     high_h = cv.getTrackbarPos('HighH', 'Trackbars')
-#     low_s = cv.getTrackbarPos('LowS', 'Trackbars')
-#     high_s = cv.getTrackbarPos('HighS', 'Trackbars')
-#     low_v = cv.getTrackbarPos('LowV', 'Trackbars')
-#     high_v = cv.getTrackbarPos('HighV', 'Trackbars')
+cv.namedWindow('Trackbars')
+cv.createTrackbar('LowH', 'Trackbars', 0, 179, nothing)
+cv.createTrackbar('HighH', 'Trackbars', 120, 179, nothing)
+cv.createTrackbar('LowS', 'Trackbars', 20, 255, nothing)
+cv.createTrackbar('HighS', 'Trackbars', 255, 255, nothing)
+cv.createTrackbar('LowV', 'Trackbars', 0, 255, nothing)
+cv.createTrackbar('HighV', 'Trackbars', 157, 255, nothing)
 
-#     lower_red = np.array([low_h, low_s, low_v])
-#     upper_red = np.array([high_h, high_s, high_v])
+while True:
+    low_h = cv.getTrackbarPos('LowH', 'Trackbars')
+    high_h = cv.getTrackbarPos('HighH', 'Trackbars')
+    low_s = cv.getTrackbarPos('LowS', 'Trackbars')
+    high_s = cv.getTrackbarPos('HighS', 'Trackbars')
+    low_v = cv.getTrackbarPos('LowV', 'Trackbars')
+    high_v = cv.getTrackbarPos('HighV', 'Trackbars')
 
-#     mask = cv.inRange(hsv_img, lower_red, upper_red)
+    lower_red = np.array([low_h, low_s, low_v])
+    upper_red = np.array([high_h, high_s, high_v])
 
-#     cv.imshow('Mask', mask)
+    mask = cv.inRange(hsv_img, lower_red, upper_red)
 
-#     k = cv.waitKey(1) & 0xFF
-#     if k == 27:  # ESC om te stoppen
-#         break
+    cv.imshow('Mask', mask)
+
+    k = cv.waitKey(1) & 0xFF
+    if k == 27:  # ESC om te stoppen
+        break
 
 # Zorg dat mask zwart-wit is, wit = object (aardbei)
 mask_inv = cv.bitwise_not(mask)

@@ -47,7 +47,7 @@ def stop_datacube(ui_context):
     os.makedirs(full_dir, exist_ok=True) 
 
     # Prepare save path
-    timestamp = datetime.now().strftime("%d_%m_%Y_%H-%M-%S")
+    timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
     save_path = os.path.join(full_dir, f"dc_{timestamp}.npy")
 
     if cube is not None:

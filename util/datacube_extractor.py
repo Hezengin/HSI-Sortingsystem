@@ -16,8 +16,8 @@ def extractor(ui_context, path):
     hsv_img = cv.cvtColor(rgb_uint8, cv.COLOR_RGB2HSV)
 
     # Fixed HSV range
-    lower_bound = np.array([0, 20, 0])
-    upper_bound = np.array([120, 255, 157])
+    lower_bound = np.array([0, 75, 0])
+    upper_bound = np.array([152, 255, 187])
     mask = cv.inRange(hsv_img, lower_bound, upper_bound)
 
     contours, _ = cv.findContours(mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
@@ -42,7 +42,7 @@ def extractor(ui_context, path):
         x, y, w, h = cv.boundingRect(cnt)
 
         # Skip small contours
-        if w < 30 or h < 15 or area < 3000:
+        if w < 30 or h < 15 :
             # ui_context.log(f"[SKIP] Contour {i} too small: w={w}, h={h}, area={area}")
             continue
 
