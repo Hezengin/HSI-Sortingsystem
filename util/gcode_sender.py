@@ -1,28 +1,26 @@
 import serial
 import time
 
-
 # module is already connected so it is open no need to open it again
 class ConveyorBeltConnection:
-    def __init__(self, port, baudrate):
-        self.port = port
-        self.baudrate = baudrate
+    def __init__(self, port, baudrate): 
+        self.ser = serial.Serial(port, baudrate)
+        self.ser.port = port
+        self.ser.baudrate = baudrate
 
-        ser = serial.Serial(port, baudrate)
-        self.serial = ser
-        
-
-        if(ser.is_open == False):
+        if(self.ser.is_open == False):
             print("Serial not connected")
+        else:
+            print(f"Connected to conveyor belt with port {self.ser.port}")
 
-    def send_gcode(command_str):
+    def send_gcode(self,command_str):
         try:
             command = command_str
-            self.serial.write(command.encode('ascii'))
+            self.ser.write(command.encode('ascii'))
             print(f"Sent: {command.strip()}")
 
             time.sleep(0.1)
-            response = ser.readline()
+            response = self.ser.readline()
             if response:
                 print(f"Received: {response.decode('ascii').strip()}")
             else:
