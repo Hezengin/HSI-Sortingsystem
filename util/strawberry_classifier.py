@@ -1,4 +1,4 @@
-#%%
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -11,8 +11,9 @@ import random
 from collections import Counter
 
 # import camera.camera_helper as camera_helper
-import util.datacube_extractor as datacube_extractor
-import util.roi_extractor as roi_extractor
+# import util.datacube_extractor as datacube_extractor
+# import util.roi_extractor as roi_extractor
+
 
 class HSIClassifier:
     """Main class for HSI classification with separate training and inference capabilities."""
@@ -42,6 +43,7 @@ class HSIClassifier:
         return (cube - mean) / (std + 1e-6)
     
     def train(self, all_cubes, all_labels, epochs=300, test_size=0.2, batch_size=128):
+        self.model.train()
         """Train the model with the given data."""
         # Normalize and prepare data
         all_cubes = self.normalize_cubes(all_cubes)
@@ -139,6 +141,21 @@ class HSIClassifier:
         
         return pred[0]  # Return single prediction
     
+    
+    def predict_cube_with_certainty(self, cube):
+        self.model.eval()
+        cube = self.normalize_single_cube(cube)
+        cube_tensor = torch.tensor(cube[np.newaxis, np.newaxis, :, :, :], dtype=torch.float32).to(self.device)
+
+        with torch.no_grad():
+            logits = self.model(cube_tensor)
+            probs = torch.softmax(logits, dim=1).cpu().numpy()[0]
+            pred = np.argmax(probs)
+            certainty = probs[pred]
+
+        return pred, certainty
+
+    
     def predict_batch(self, cubes):
         """Predict classes for a batch of cubes."""
         if self.normalization_stats is None:
@@ -223,56 +240,51 @@ def load_cube(file_path):
     except Exception as e:
         raise ValueError(f"Error loading cube from {file_path}: {e}")
 
-# Makes a prediction
-def make_prediction(ui_context, dpg, crop_path):
-    dpg = ui_context["dpg"]
+# # Gets ROI from ui and sends prediction to ui
+# def call_prediction(ui_context, dpg, crop_path):
+#     dpg = ui_context["dpg"]
 
-    save_path = datacube_extractor.extractor(ui_context, crop_path)
-    cube = roi_extractor.load_roi(save_path)
-    
-    # Load the trained model
-    classifier = HSIClassifier(num_classes=3)
-    classifier.load_model("Resources/best_hsi_model.pth")
-    
-    # Batch of cubes prediction
+#     save_path = datacube_extractor.extractor(ui_context, crop_path)
+#     cube = roi_extractor.load_roi(save_path)
+
+#     pred, certainty = make_prediction(cube=cube)
+#     dpg.configure_item("ai_result", default_value=f"The result of the classification is: {pred}")
+
+ 
+## Takes in a cube (5 pixels x 224 bands x 5 bands) and uses a 3D CNN to classify whether
+def make_prediction(cube):
     try:
-            test_cube = load_cube(cube)
-            print(f"Loaded cube shape: {test_cube.shape}")
-            pred = classifier.predict_cube(test_cube)
-            print(f"Predicted class: {pred}")
-            dpg.configure_item("ai_result", default_value=f"The result of the classification is: {pred}")
-            # Get prediction certainty
-            with torch.no_grad():
-                cube_tensor = torch.tensor(test_cube[np.newaxis, np.newaxis, :, :, :], dtype=torch.float32).to(classifier.device)
-                probabilities = torch.softmax(classifier.model(cube_tensor), dim=1).cpu().numpy()
-            
-            certainty = probabilities[0][pred]
-            print(f"Prediction certainty: {certainty:.4f}")
-        
+        if cube.size == 0:
+            raise ValueError(f"Loaded cube is empty.")
+    except Exception as e:
+        print(f"Error loading cube: {e}")
+        return
+
+    # Initialize and load the model
+    classifier = HSIClassifier(num_classes=3)
+    try:
+        classifier.load_model("Resources/best_hsi_model.pth")
+    except Exception as e:
+        print(f"Error loading model: {e}")
+        return
+
+    # Run prediction with certainty
+    try:
+        pred, certainty = classifier.predict_cube_with_certainty(cube)
+        print(f"Predicted class: {pred}")
+        print(f"Prediction certainty: {certainty:.4f}")
     except Exception as e:
         print(f"Error during prediction: {e}")
-
-# # Example usage:
-# if __name__ == "__main__":
-#     # Load the trained model
-#     classifier = HSIClassifier(num_classes=3)
-#     classifier.load_model("best_hsi_model.pth")
-    
-#     # Single cube prediction
-#     cube_path = r"Cropped_20250509_151112\crop_000_roi_10.npy"  # Path to the cube file
-#     try:
-#         test_cube = load_cube(cube_path)
-#         print(f"Loaded cube shape: {test_cube.shape}")
-#         pred = classifier.predict_cube(test_cube)
-#         print(f"Predicted class: {pred}")
-#         # Get prediction certainty
-#         with torch.no_grad():
-#             cube_tensor = torch.tensor(test_cube[np.newaxis, np.newaxis, :, :, :], dtype=torch.float32).to(classifier.device)
-#             probabilities = torch.softmax(classifier.model(cube_tensor), dim=1).cpu().numpy()
         
-#         certainty = probabilities[0][pred]
-#         print(f"Prediction certainty: {certainty:.4f}")
-        
-#     except Exception as e:
-#         print(f"Error during prediction: {e}")
+    return pred, certainty
 
+
+
+
+if __name__ == "__main__":
+    test_crop_path = r"Cropped_20250509_151112\crop_000_roi_06.npy"  # or whatever input your extractor expects\
+    cube = load_cube(test_crop_path)
+    make_prediction(cube=cube)
+
+
+# %%
