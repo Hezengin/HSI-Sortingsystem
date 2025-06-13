@@ -103,9 +103,39 @@ def run_gui():
                     dpg.add_button(label="Clear Log", callback=lambda: clear_log())
                     dpg.add_button(label="Close App", callback=lambda: camera_helper.close())
 
-            with dpg.tab(label="AI Classification"):
-                dpg.add_button(label="classification")
+            with dpg.font_registry():
+                large_font = dpg.add_font("Resources/OpenSans-Bold.ttf", 32)
 
+            with dpg.tab(label="AI Classification"):
+                classification_header = dpg.add_text("Classification")
+                dpg.bind_item_font(classification_header, large_font)
+
+                dpg.add_text("Make a scan")
+                dpg.add_child_window(tag="scan_window", autosize_x=True, height=105)
+                with dpg.group(horizontal=False, parent="scan_window"):
+                    dpg.add_text("Make sure the strawberry is on the conveyor belt and the camera is connected")
+                    dpg.add_text("While making a scan be sure to start it in a closed environment for the best scan")
+                    dpg.add_text("The result will be one of the following fresh, old or spoiled")
+                    with dpg.group(horizontal=True):
+                        dpg.add_button(label="Start Scan", callback=lambda: camera_helper.start_datacube(ui_context, True))
+                        dpg.add_button(label="Stop Scan", callback=lambda: camera_helper.stop_datacube(ui_context))
+                        dpg.add_button(label="Classificate")  # TODO
+
+                # RESULT WINDOW
+                dpg.add_text("Result")
+                dpg.add_child_window(tag="result_window", autosize_x=True, height=30)
+                with dpg.group(horizontal=False, parent="result_window"):
+                    dpg.add_text("The result of the classification is: ", tag="ai_result")
+                
+                # SETTINGS WINDOW
+                dpg.add_text("Settings")
+                dpg.add_child_window(tag="settings_window", autosize_x=True, height=30)
+                with dpg.group(horizontal=True, parent="settings_window"):
+                    dpg.add_text("AI Model : ")
+                    array = ["Forest", "CNN"]
+                    dpg.add_combo(array, default_value=array[1])
+
+                    
     # GENERAL SETTINGS OF GUI
     dpg.create_viewport(title='HSI GUI', width=700, height=630)
     dpg.setup_dearpygui()
