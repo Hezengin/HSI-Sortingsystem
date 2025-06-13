@@ -10,9 +10,9 @@ import os
 import random
 from collections import Counter
 
-# import camera.camera_helper as camera_helper
-# import util.datacube_extractor as datacube_extractor
-# import util.roi_extractor as roi_extractor
+import camera.camera_helper as camera_helper
+import util.datacube_extractor as datacube_extractor
+import util.roi_extractor as roi_extractor
 
 
 class HSIClassifier:
@@ -240,15 +240,15 @@ def load_cube(file_path):
     except Exception as e:
         raise ValueError(f"Error loading cube from {file_path}: {e}")
 
-# # Gets ROI from ui and sends prediction to ui
-# def call_prediction(ui_context, dpg, crop_path):
-#     dpg = ui_context["dpg"]
+# Gets ROI from ui and sends prediction to ui
+def call_prediction(ui_context, dpg, crop_path):
+    dpg = ui_context["dpg"]
 
-#     save_path = datacube_extractor.extractor(ui_context, crop_path)
-#     cube = roi_extractor.load_roi(save_path)
+    save_path = datacube_extractor.extractor(ui_context, crop_path)
+    cube = roi_extractor.load_roi(save_path)
 
-#     pred, certainty = make_prediction(cube=cube)
-#     dpg.configure_item("ai_result", default_value=f"The result of the classification is: {pred}")
+    pred, certainty = make_prediction(cube=cube)
+    dpg.configure_item("ai_result", default_value=f"The result of the classification is: {pred}")
 
  
 ## Takes in a cube (5 pixels x 224 bands x 5 bands) and uses a 3D CNN to classify whether
@@ -281,10 +281,7 @@ def make_prediction(cube):
 
 
 
-if __name__ == "__main__":
-    test_crop_path = r"Cropped_20250509_151112\crop_000_roi_06.npy"  # or whatever input your extractor expects\
-    cube = load_cube(test_crop_path)
-    make_prediction(cube=cube)
-
-
-# %%
+# if __name__ == "__main__":
+#     test_crop_path = r"Cropped_20250509_151112\crop_000_roi_06.npy"  # or whatever input your extractor expects\
+#     cube = load_cube(test_crop_path)
+#     make_prediction(cube=cube)
