@@ -2,8 +2,10 @@ import numpy as np
 import cv2 as cv
 import matplotlib.pyplot as plt
 import os
+import glob
 
-def detect_strawberry_contours(crop, crop_path, band_index=130, visualize=True, roi_size=5):
+def detect_strawberry_contours(crop_path, band_index=130, visualize=True, roi_size=5):
+    crop = np.load(crop_path)
     band_img = crop[:, band_index, :]
 
     threshold = 0.73 * band_img.max()
@@ -41,46 +43,54 @@ def detect_strawberry_contours(crop, crop_path, band_index=130, visualize=True, 
     if visualize:
         plt.show()
 
-    return contours
+def create_rois(crop_path):
+    crop_files = sorted(glob.glob(os.path.join(crop_path, 'crop_*.npy')))
+
+    print(f"Gevonden {len(crop_files)} crops in: {crop_path}")
+
+    for crop_file in crop_files:
+        detect_strawberry_contours(crop_file,130,False)
+
+def load_roi(crop_path):
+    create_rois(crop_path)
+
+    for filename in os.listdir(crop_path):
+            if "roi" in filename and filename.endswith(".npy"):
+                filepath = os.path.join(crop_path, filename)
+                return filepath  
+
+    raise FileNotFoundError("Geen ROI .npy-bestanden gevonden in de map.")
+
+# TESTING
+# array = load_roi_arrays(r"DataCubes\05_06_2025\Cropped_05062025_120856")
+# print(array)
 
 # for i in range(17):
 #     crop_path = f'DataCubes/03_06_2025/Cropped_03062025_152045/crop_{i:03d}.npy'
-#     crop = np.load(crop_path)
 #     print(f"Processing {crop_path}")
-#     contours = detect_strawberry_contours(crop, crop_path, band_index=130)
+#     contours = detect_strawberry_contours(crop_path, band_index=130)
     
 # for i in range(17):
 #     crop_path = f'DataCubes/04_06_2025/Cropped_04062025_133054/crop_{i:03d}.npy'
-#     crop = np.load(crop_path)
 #     print(f"Processing {crop_path}")
-#     contours = detect_strawberry_contours(crop, crop_path, band_index=130)
+#     contours = detect_strawberry_contours(crop_path, band_index=130)
     
 # for i in range(17):
 #     crop_path = f'DataCubes/04_06_2025/Cropped_04062025_133942/crop_{i:03d}.npy'
-#     crop = np.load(crop_path)
 #     print(f"Processing {crop_path}")
-#     contours = detect_strawberry_contours(crop, crop_path, band_index=130)
+#     contours = detect_strawberry_contours(crop_path, band_index=130)
 
 # for i in range(17):
 #     crop_path = f'DataCubes/04_06_2025/Cropped_04062025_134921/crop_{i:03d}.npy'
-#     crop = np.load(crop_path)
 #     print(f"Processing {crop_path}")
-#     contours = detect_strawberry_contours(crop, crop_path, band_index=130)
+#     contours = detect_strawberry_contours(crop_path, band_index=130)
 
 # for i in range(17):
 #     crop_path = f'DataCubes/05_06_2025/Cropped_05062025_120810/crop_{i:03d}.npy'
-#     crop = np.load(crop_path)
 #     print(f"Processing {crop_path}")
-#     contours = detect_strawberry_contours(crop, crop_path ,band_index=130)
+#     contours = detect_strawberry_contours(crop_path ,band_index=130)
 
 # for i in range(17):
-#     crop_path = f'DataCubes/05_06_2025/Cropped_05062025_120856/crop_{i:03d}.npy'
-#     crop = np.load(crop_path)
+#     crop_path = f'DataCubes/05_06_2025/Cropped_05062025_121305/crop_{i:03d}.npy'
 #     print(f"Processing {crop_path}")
-#     contours = detect_strawberry_contours(crop, crop_path ,band_index=130)
-
-for i in range(17):
-    crop_path = f'DataCubes/05_06_2025/Cropped_05062025_121305/crop_{i:03d}.npy'
-    crop = np.load(crop_path)
-    print(f"Processing {crop_path}")
-    contours = detect_strawberry_contours(crop, crop_path ,band_index=130)
+#     contours = detect_strawberry_contours(crop_path ,band_index=130)

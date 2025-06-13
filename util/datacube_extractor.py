@@ -34,7 +34,6 @@ def extractor(ui_context, path):
     else:
         raise ValueError(f"Geen geldige timestamp gevonden in bestandsnaam: {filename}")
 
-
     crop_count = 0
     for i in range(1, len(contours)):
         cnt = contours[i]
@@ -48,11 +47,13 @@ def extractor(ui_context, path):
 
         cropped_cube = data_cube[y:y+h, :, x:x+w]
         crop_filename = os.path.join(output_dir, f'crop_{crop_count:03d}.npy')
+        
         np.save(crop_filename, cropped_cube)
         # ui_context.log(f"[SAVED] {os.path.basename(crop_filename)} - shape: {cropped_cube.shape}, area: {area}")
         crop_count += 1
         
     gui.refresh_comboboxes()
+    return output_dir
 
 def generate_rgb_composite(data_cube, bands, red_range=(620, 750), green_range=(495, 570), blue_range=(450, 495)):
     red_band = np.argmin(np.abs(bands - np.mean(red_range)))

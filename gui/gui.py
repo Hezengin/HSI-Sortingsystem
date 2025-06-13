@@ -5,6 +5,8 @@ from util.log_levels import LogLevel
 import matplotlib.pyplot as plt
 import util.image_extractor as image_extractor
 import util.datacube_extractor as datacube_extractor
+import util.roi_extractor as detect_roi
+import util.strawberry_classifier as strawberry_classifier
 
 def run_gui():
     
@@ -120,7 +122,7 @@ def run_gui():
                     with dpg.group(horizontal=True):
                         dpg.add_button(label="Start Scan", callback=lambda: camera_helper.start_datacube(ui_context, True))
                         dpg.add_button(label="Stop Scan", callback=lambda: camera_helper.stop_datacube(ui_context))
-                        dpg.add_button(label="Classificate")  # TODO
+                        dpg.add_button(label="Classificate", callback=lambda: strawberry_classifier.make_prediction(ui_context, dpg, r"DataCubes\04_06_2025\dc_04062025_133942.npy"))  # TODO
 
                 # RESULT WINDOW
                 dpg.add_text("Result")
