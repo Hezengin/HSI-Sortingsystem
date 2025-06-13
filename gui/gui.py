@@ -111,11 +111,12 @@ def run_gui():
                 dpg.bind_item_font(classification_header, large_font)
 
                 dpg.add_text("Make a scan")
-                dpg.add_child_window(tag="scan_window", autosize_x=True, height=105)
+                dpg.add_child_window(tag="scan_window", autosize_x=True, height=130)
                 with dpg.group(horizontal=False, parent="scan_window"):
-                    dpg.add_text("Make sure the strawberry is on the conveyor belt and the camera is connected")
-                    dpg.add_text("While making a scan be sure to start it in a closed environment for the best scan")
-                    dpg.add_text("The result will be one of the following fresh, old or spoiled")
+                    dpg.add_text("Things to look out for:")
+                    dpg.add_text("- Make sure the strawberry is on one end of the conveyor belt and the camera is connected.")
+                    dpg.add_text("- While making a scan be sure to start it in a closed environment for the best scan.")
+                    dpg.add_text("- The result will be one of the following fresh, old or spoiled.")
                     with dpg.group(horizontal=True):
                         dpg.add_button(label="Start Scan", callback=lambda: camera_helper.start_datacube(ui_context, True))
                         dpg.add_button(label="Stop Scan", callback=lambda: camera_helper.stop_datacube(ui_context))
@@ -123,13 +124,13 @@ def run_gui():
 
                 # RESULT WINDOW
                 dpg.add_text("Result")
-                dpg.add_child_window(tag="result_window", autosize_x=True, height=30)
+                dpg.add_child_window(tag="result_window", autosize_x=True, height=35)
                 with dpg.group(horizontal=False, parent="result_window"):
                     dpg.add_text("The result of the classification is: ", tag="ai_result")
                 
                 # SETTINGS WINDOW
                 dpg.add_text("Settings")
-                dpg.add_child_window(tag="settings_window", autosize_x=True, height=30)
+                dpg.add_child_window(tag="settings_window", autosize_x=True, height=35)
                 with dpg.group(horizontal=True, parent="settings_window"):
                     dpg.add_text("AI Model : ")
                     array = ["Forest", "CNN"]
