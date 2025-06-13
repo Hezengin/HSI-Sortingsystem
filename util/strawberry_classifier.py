@@ -10,9 +10,12 @@ import os
 import random
 from collections import Counter
 
-import camera.camera_helper as camera_helper
-import util.datacube_extractor as datacube_extractor
-import util.roi_extractor as roi_extractor
+# import camera.camera_helper as camera_helper
+# import util.datacube_extractor as datacube_extractor
+# import util.roi_extractor as roi_extractor
+
+from torch.utils.tensorboard import SummaryWriter
+import datetime
 
 
 class HSIClassifier:
@@ -23,6 +26,7 @@ class HSIClassifier:
         self.device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = HSI3DCNN(num_classes).to(self.device)
         self.normalization_stats = None
+        self.writer = SummaryWriter(log_dir=f"runs/HSI_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}")
         
     def normalize_cubes(self, cubes):
         """Normalize cubes and store normalization stats for later use."""
@@ -85,12 +89,15 @@ class HSIClassifier:
 
             scheduler.step()
             avg_loss = running_loss / len(train_loader)
-            print(f"Epoch {epoch+1}/{epochs} | Loss: {avg_loss:.4f}")
-
-            # Evaluation
             acc = self._evaluate(test_loader)
-            print(f"Validation Accuracy: {acc:.4f}")
-
+            print(f"Epoch {epoch+1}/{epochs} | Loss: {avg_loss:.4f} | Validation Accuracy: {acc:.4f}")
+            
+            
+            # Tensorboard logs
+            self.writer.add_scalar("Loss/train", avg_loss, epoch)
+            self.writer.add_scalar("Accuracy/val", acc, epoch)
+            self.writer.add_scalar("LearningRate", scheduler.get_last_lr()[0], epoch)
+            
             # Save best model
             if acc > best_acc:
                 best_acc = acc
@@ -98,6 +105,8 @@ class HSIClassifier:
                 print("✅ Saved new best model.")
 
         print("Training complete.")
+        self.writer.close()
+        
         return best_acc
     
     def _evaluate(self, data_loader):
@@ -129,19 +138,6 @@ class HSIClassifier:
             print(f"Error loading model: {e}")
             raise
     
-    def predict_cube(self, cube):
-        """Predict class for a single hyperspectral cube."""
-        # Normalize and prepare the cube dynamically
-        cube = self.normalize_single_cube(cube)
-        cube_tensor = torch.tensor(cube[np.newaxis, np.newaxis, :, :, :], dtype=torch.float32).to(self.device)
-        
-        # Predict
-        with torch.no_grad():
-            pred = self.model(cube_tensor).argmax(dim=1).cpu().numpy()
-        
-        return pred[0]  # Return single prediction
-    
-    
     def predict_cube_with_certainty(self, cube):
         self.model.eval()
         cube = self.normalize_single_cube(cube)
@@ -156,20 +152,20 @@ class HSIClassifier:
         return pred, certainty
 
     
-    def predict_batch(self, cubes):
-        """Predict classes for a batch of cubes."""
-        if self.normalization_stats is None:
-            raise ValueError("Model not trained or loaded with normalization stats")
+    # def predict_batch(self, cubes):
+    #     """Predict classes for a batch of cubes."""
+    #     if self.normalization_stats is None:
+    #         raise ValueError("Model not trained or loaded with normalization stats")
             
-        # Normalize all cubes
-        normalized_cubes = np.array([self.normalize_single_cube(c) for c in cubes])
-        cube_tensors = torch.tensor(normalized_cubes[:, np.newaxis, :, :, :], dtype=torch.float32).to(self.device)
+    #     # Normalize all cubes
+    #     normalized_cubes = np.array([self.normalize_single_cube(c) for c in cubes])
+    #     cube_tensors = torch.tensor(normalized_cubes[:, np.newaxis, :, :, :], dtype=torch.float32).to(self.device)
         
-        # Predict
-        with torch.no_grad():
-            preds = self.model(cube_tensors).argmax(dim=1).cpu().numpy()
+    #     # Predict
+    #     with torch.no_grad():
+    #         preds = self.model(cube_tensors).argmax(dim=1).cpu().numpy()
         
-        return preds
+    #     return preds
     
     def get_class_distribution(self, preds):
         """Get count of predictions per class."""
@@ -240,19 +236,20 @@ def load_cube(file_path):
     except Exception as e:
         raise ValueError(f"Error loading cube from {file_path}: {e}")
 
-# Gets ROI from ui and sends prediction to ui
-def call_prediction(ui_context, dpg, crop_path):
-    dpg = ui_context["dpg"]
+ # Gets ROI from ui and sends prediction to ui
+# def call_prediction(ui_context, dpg, crop_path):
+#     dpg = ui_context["dpg"]
+#     save_path = datacube_extractor.extractor(ui_context, crop_path)
+#     cube = roi_extractor.load_roi(save_path)
+       
+#     model_path = "Resources\best_hsi_model.pth"
+#     pred, certainty = make_prediction(cube=cube, model_path=model_path)
+#     dpg.configure_item("ai_result", default_value=f"The result of the classification is: {pred} with a certainty of {certainty}.")
 
-    save_path = datacube_extractor.extractor(ui_context, crop_path)
-    cube = roi_extractor.load_roi(save_path)
-
-    pred, certainty = make_prediction(cube=cube)
-    dpg.configure_item("ai_result", default_value=f"The result of the classification is: {pred}")
 
  
 ## Takes in a cube (5 pixels x 224 bands x 5 bands) and uses a 3D CNN to classify whether
-def make_prediction(cube):
+def make_prediction(cube, model_path):
     try:
         if cube.size == 0:
             raise ValueError(f"Loaded cube is empty.")
@@ -263,7 +260,7 @@ def make_prediction(cube):
     # Initialize and load the model
     classifier = HSIClassifier(num_classes=3)
     try:
-        classifier.load_model("Resources/best_hsi_model.pth")
+        classifier.load_model(model_path)
     except Exception as e:
         print(f"Error loading model: {e}")
         return
@@ -281,7 +278,70 @@ def make_prediction(cube):
 
 
 
-# if __name__ == "__main__":
-#     test_crop_path = r"Cropped_20250509_151112\crop_000_roi_06.npy"  # or whatever input your extractor expects\
-#     cube = load_cube(test_crop_path)
-#     make_prediction(cube=cube)
+if __name__ == "__main__":
+    # test_crop_path = r"Cropped_20250509_151112\crop_000_roi_06.npy"  # or whatever input your extractor expects\
+    # cube = load_cube(test_crop_path)
+    # make_prediction(cube=cube)
+
+    #region Training
+    # folders_day_0 = [r"C:\Users\moust\projects\AI trainen\Datacubes\03_06_2025\Cropped_03062025_152045",]
+    # folders_day_1 = [r"C:\Users\moust\projects\AI trainen\Datacubes\04_06_2025\Cropped_04062025_133054", 
+    #                  r"C:\Users\moust\projects\AI trainen\Datacubes\04_06_2025\Cropped_04062025_133942",
+    #                  r"C:\Users\moust\projects\AI trainen\Datacubes\04_06_2025\Cropped_04062025_134921"
+    #                  ]
+    # folders_day_2 = [r"C:\Users\moust\projects\AI trainen\Datacubes\05_06_2025\Cropped_05062025_120810",
+    #                  r"C:\Users\moust\projects\AI trainen\Datacubes\05_06_2025\Cropped_05062025_120856",
+    #                  r"C:\Users\moust\projects\AI trainen\Datacubes\05_06_2025\Cropped_05062025_121305"
+    #                 ]
+
+    def load_npy_files(folder):
+        # Alleen .npy files die 'roi' in de naam hebben
+        # files = [f for f in os.listdir(folder) if f.endswith('.npy')]
+        files = [f for f in os.listdir(folder) if f.endswith('.npy') and 'roi' in f.lower()]
+        data = []
+        for file in files:
+            file_path = os.path.join(folder, file)
+            cube = np.load(file_path)
+            cube = np.clip(cube, 0, 4095)  # Clip values between 0 and 4095
+            data.append(cube)
+            print(f"Loaded {file} from {folder} with shape {cube.shape}")
+        return data
+    
+    
+    # cubes_day_0, cubes_day_1, cubes_day_2 = [], [], []
+
+    # # Load data from the specified folders
+    # for folder in folders_day_0:
+    #     cubes_day_0.extend(load_npy_files(folder))
+    # for folder in folders_day_1:
+    #     cubes_day_1.extend(load_npy_files(folder))
+    # for folder in folders_day_2:
+    #     cubes_day_2.extend(load_npy_files(folder))
+    # # Cube dimensions: (width, bands, height)
+    
+    # labels_day_0 = [0] * len(cubes_day_0)
+    # labels_day_1 = [1] * len(cubes_day_1)
+    # labels_day_2 = [2] * len(cubes_day_2)
+
+    # # Combine all cubes and labels
+    # all_cubes = cubes_day_0 + cubes_day_1 + cubes_day_2
+    # all_labels = labels_day_0 + labels_day_1 + labels_day_2
+    
+    
+    # classifier = HSIClassifier(num_classes=3)
+    # classifier.train(all_cubes, all_labels, 300, 0.2, 128)
+    
+    # print("Finished training")
+    #endregion
+    
+    test_path = r"C:\Users\moust\projects\AI trainen\Datacubes\04_06_2025\Cropped_04062025_133942"  # or whatever input your extractor expects\
+    cubes = load_npy_files(test_path)
+
+
+    classifier = HSIClassifier(num_classes=3)
+    
+    
+    for cube in cubes:
+        pred, certainty = make_prediction(cube, "best_hsi_model.pth")
+        with open("prediction_log.txt", "a") as log_file:
+            log_file.write(f"Prediction: {pred}, Certainty: {certainty:.4f}\n")
