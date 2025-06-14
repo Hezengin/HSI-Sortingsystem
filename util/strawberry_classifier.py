@@ -150,7 +150,7 @@ class HSIClassifier:
 
         return pred, certainty
 
-    
+    # IN CASE WE NEED TO PREDICT MORE LATER.
     # def predict_batch(self, cubes):
     #     """Predict classes for a batch of cubes."""
     #     if self.normalization_stats is None:
@@ -169,7 +169,6 @@ class HSIClassifier:
     def get_class_distribution(self, preds):
         """Get count of predictions per class."""
         return Counter(preds)
-    
 
 class HSI3DCNN(nn.Module):
     """3D CNN model for hyperspectral image classification."""
@@ -196,7 +195,6 @@ class HSI3DCNN(nn.Module):
 
     def forward(self, x):
         return self.classifier(self.features(x))
-
 
 class HSIPixelDataset(Dataset):
     """Dataset class for HSI cubes with augmentation support."""
@@ -245,8 +243,6 @@ def call_prediction(ui_context, dpg, crop_path):
     pred, certainty = make_prediction(cube=cube, model_path=model_path)
     dpg.configure_item("ai_result", default_value=f"The result of the classification is: {pred} with a certainty of {certainty}.")
 
-
- 
 ## Takes in a cube (5 pixels x 224 bands x 5 bands) and uses a 3D CNN to classify whether
 def make_prediction(cube, model_path):
     try:
@@ -273,71 +269,3 @@ def make_prediction(cube, model_path):
         print(f"Error during prediction: {e}")
         
     return pred, certainty
-
-# if __name__ == "__main__":
-#     # test_crop_path = r"Cropped_20250509_151112\crop_000_roi_06.npy"  # or whatever input your extractor expects\
-#     # cube = load_cube(test_crop_path)
-#     # make_prediction(cube=cube)
-
-#     #region Training
-#     # folders_day_0 = [r"C:\Users\moust\projects\AI trainen\Datacubes\03_06_2025\Cropped_03062025_152045",]
-#     # folders_day_1 = [r"C:\Users\moust\projects\AI trainen\Datacubes\04_06_2025\Cropped_04062025_133054", 
-#     #                  r"C:\Users\moust\projects\AI trainen\Datacubes\04_06_2025\Cropped_04062025_133942",
-#     #                  r"C:\Users\moust\projects\AI trainen\Datacubes\04_06_2025\Cropped_04062025_134921"
-#     #                  ]
-#     # folders_day_2 = [r"C:\Users\moust\projects\AI trainen\Datacubes\05_06_2025\Cropped_05062025_120810",
-#     #                  r"C:\Users\moust\projects\AI trainen\Datacubes\05_06_2025\Cropped_05062025_120856",
-#     #                  r"C:\Users\moust\projects\AI trainen\Datacubes\05_06_2025\Cropped_05062025_121305"
-#     #                 ]
-
-#     def load_npy_files(folder):
-#         # Alleen .npy files die 'roi' in de naam hebben
-#         # files = [f for f in os.listdir(folder) if f.endswith('.npy')]
-#         files = [f for f in os.listdir(folder) if f.endswith('.npy') and 'roi' in f.lower()]
-#         data = []
-#         for file in files:
-#             file_path = os.path.join(folder, file)
-#             cube = np.load(file_path)
-#             cube = np.clip(cube, 0, 4095)  # Clip values between 0 and 4095
-#             data.append(cube)
-#             print(f"Loaded {file} from {folder} with shape {cube.shape}")
-#         return data
-    
-    
-#     # cubes_day_0, cubes_day_1, cubes_day_2 = [], [], []
-
-#     # # Load data from the specified folders
-#     # for folder in folders_day_0:
-#     #     cubes_day_0.extend(load_npy_files(folder))
-#     # for folder in folders_day_1:
-#     #     cubes_day_1.extend(load_npy_files(folder))
-#     # for folder in folders_day_2:
-#     #     cubes_day_2.extend(load_npy_files(folder))
-#     # # Cube dimensions: (width, bands, height)
-    
-#     # labels_day_0 = [0] * len(cubes_day_0)
-#     # labels_day_1 = [1] * len(cubes_day_1)
-#     # labels_day_2 = [2] * len(cubes_day_2)
-
-#     # # Combine all cubes and labels
-#     # all_cubes = cubes_day_0 + cubes_day_1 + cubes_day_2
-#     # all_labels = labels_day_0 + labels_day_1 + labels_day_2
-    
-    
-#     # classifier = HSIClassifier(num_classes=3)
-#     # classifier.train(all_cubes, all_labels, 300, 0.2, 128)
-    
-#     # print("Finished training")
-#     #endregion
-    
-#     test_path = r"C:\Users\moust\projects\AI trainen\Datacubes\04_06_2025\Cropped_04062025_133942"  # or whatever input your extractor expects\
-#     cubes = load_npy_files(test_path)
-
-
-#     classifier = HSIClassifier(num_classes=3)
-    
-    
-#     for cube in cubes:
-#         pred, certainty = make_prediction(cube, "best_hsi_model.pth")
-#         with open("prediction_log.txt", "a") as log_file:
-#             log_file.write(f"Prediction: {pred}, Certainty: {certainty:.4f}\n")

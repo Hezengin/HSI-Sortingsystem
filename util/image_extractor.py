@@ -60,6 +60,3 @@ def save_image(ui_context, band , cmap):
     plt.imsave(save_path, img, cmap=cmap)
     
     ui_context["log_func"](LogLevel.INFO, f"Image saved band: {band}, cmap: {cmap}")
-    
-def cube_shrinker(ui_context):
-    temp_image_path = "temp_plot_clean.png"

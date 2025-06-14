@@ -1,4 +1,4 @@
-from gcode_sender import ConveyorBeltConnection
+from util.gcode_sender import ConveyorBeltConnection
 
 cbc = ConveyorBeltConnection("COM6", 115200)
 # cbc.send_gcode("IsXConveyor")

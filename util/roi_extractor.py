@@ -26,7 +26,7 @@ def detect_strawberry_contours(crop_path, band_index=130, visualize=True, roi_si
         if w >= 10 and h >= 5:
             cx = x + w // 2
             cy = y + h // 2
-            # Grotere spacing voor extra ROIs (meer variatie)
+            # More spacing for more variation
             for dx in [-6, -3, 0, 3, 6]:
                 roi_cx = cx + dx
                 roi_x = int(np.clip(roi_cx - roi_size // 2, 0, band_img.shape[1] - roi_size))
@@ -61,37 +61,3 @@ def load_roi(crop_path):
                 return cube
 
     raise FileNotFoundError("Geen ROI .npy-bestanden gevonden in de map.")
-
-# TESTING
-# array = load_roi_arrays(r"DataCubes\05_06_2025\Cropped_05062025_120856")
-# print(array)
-
-# for i in range(17):
-#     crop_path = f'DataCubes/03_06_2025/Cropped_03062025_152045/crop_{i:03d}.npy'
-#     print(f"Processing {crop_path}")
-#     contours = detect_strawberry_contours(crop_path, band_index=130)
-    
-# for i in range(17):
-#     crop_path = f'DataCubes/04_06_2025/Cropped_04062025_133054/crop_{i:03d}.npy'
-#     print(f"Processing {crop_path}")
-#     contours = detect_strawberry_contours(crop_path, band_index=130)
-    
-# for i in range(17):
-#     crop_path = f'DataCubes/04_06_2025/Cropped_04062025_133942/crop_{i:03d}.npy'
-#     print(f"Processing {crop_path}")
-#     contours = detect_strawberry_contours(crop_path, band_index=130)
-
-# for i in range(17):
-#     crop_path = f'DataCubes/04_06_2025/Cropped_04062025_134921/crop_{i:03d}.npy'
-#     print(f"Processing {crop_path}")
-#     contours = detect_strawberry_contours(crop_path, band_index=130)
-
-# for i in range(17):
-#     crop_path = f'DataCubes/05_06_2025/Cropped_05062025_120810/crop_{i:03d}.npy'
-#     print(f"Processing {crop_path}")
-#     contours = detect_strawberry_contours(crop_path ,band_index=130)
-
-# for i in range(17):
-#     crop_path = f'DataCubes/05_06_2025/Cropped_05062025_121305/crop_{i:03d}.npy'
-#     print(f"Processing {crop_path}")
-#     contours = detect_strawberry_contours(crop_path ,band_index=130)

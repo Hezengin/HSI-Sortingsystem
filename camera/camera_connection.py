@@ -35,35 +35,36 @@ def connect(ui_context, dpg):
     else:
         ui_context["log_func"](LogLevel.WARNING,"Already connected to the camera")
 
-def disconnect(ui_context, dpg):
-    dpg = ui_context["dpg"]
-    system = ui_context["camera_data"]["system"]
-    cam = ui_context["camera_data"].get("cam")
+#   IN CASE THE USER WANT TO DISCONNECT THE CAMERA. NOT WORKING AS EXPECTED AND THEREFORE COMMENTED 
+# def disconnect(ui_context, dpg):
+#     dpg = ui_context["dpg"]
+#     system = ui_context["camera_data"]["system"]
+#     cam = ui_context["camera_data"].get("cam")
 
-    if cam:
-        try:
-            cam.close_stream()  # Close the stream if open
-        except Exception as e:
-            ui_context["log_func"](LogLevel.WARNING, f"Error while closing stream: {e}")
+#     if cam:
+#         try:
+#             cam.close_stream()  # Close the stream if open
+#         except Exception as e:
+#             ui_context["log_func"](LogLevel.WARNING, f"Error while closing stream: {e}")
 
-        try:
-            cam.close()  # Close the camera connection
-        except Exception as e:
-            ui_context["log_func"](LogLevel.WARNING, f"Error while closing camera: {e}")
+#         try:
+#             cam.close()  # Close the camera connection
+#         except Exception as e:
+#             ui_context["log_func"](LogLevel.WARNING, f"Error while closing camera: {e}")
 
-        try:
-            system.close()  # Close the system (optional, depending on implementation)
-        except Exception as e:
-            ui_context["log_func"](LogLevel.WARNING, f"Error while closing system: {e}")
+#         try:
+#             system.close()  # Close the system (optional, depending on implementation)
+#         except Exception as e:
+#             ui_context["log_func"](LogLevel.WARNING, f"Error while closing system: {e}")
 
-        # Reset the context
-        ui_context["camera_data"]["cam"] = None
-        ui_context["camera_data"]["intf"] = None
-        ui_context["set_connection_status"](False)
-        ui_context["log_func"](LogLevel.INFO, "Camera is Disconnected")
-    else:
-        ui_context["log_func"](LogLevel.WARNING, "No camera was connected")
+#         # Reset the context
+#         ui_context["camera_data"]["cam"] = None
+#         ui_context["camera_data"]["intf"] = None
+#         ui_context["set_connection_status"](False)
+#         ui_context["log_func"](LogLevel.INFO, "Camera is Disconnected")
+#     else:
+#         ui_context["log_func"](LogLevel.WARNING, "No camera was connected")
 
-    dpg.configure_item("disconnect_button", show=False)
-    dpg.configure_item("connect_button", show=True)
-    dpg.configure_item("connection_bullet", color=(255, 0, 0))
+#     dpg.configure_item("disconnect_button", show=False)
+#     dpg.configure_item("connect_button", show=True)
+#     dpg.configure_item("connection_bullet", color=(255, 0, 0))
