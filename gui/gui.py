@@ -122,7 +122,7 @@ def run_gui():
                     with dpg.group(horizontal=True):
                         dpg.add_button(label="Start Scan", callback=lambda: camera_helper.start_datacube(ui_context, True))
                         dpg.add_button(label="Stop Scan", callback=lambda: camera_helper.stop_datacube(ui_context))
-                        dpg.add_button(label="Classificate", callback=lambda: strawberry_classifier.make_prediction(ui_context, dpg, r"DataCubes\04_06_2025\dc_04062025_133942.npy"))  # TODO
+                        dpg.add_button(label="Classificate", callback=lambda: strawberry_classifier.call_prediction(ui_context, dpg, r"DataCubes\05_06_2025\dc_05062025_120856.npy"))  # TODO
 
                 # RESULT WINDOW
                 dpg.add_text("Result")
@@ -130,15 +130,14 @@ def run_gui():
                 with dpg.group(horizontal=False, parent="result_window"):
                     dpg.add_text("The result of the classification is: ", tag="ai_result")
                 
-                # SETTINGS WINDOW
-                dpg.add_text("Settings")
-                dpg.add_child_window(tag="settings_window", autosize_x=True, height=35)
-                with dpg.group(horizontal=True, parent="settings_window"):
-                    dpg.add_text("AI Model : ")
-                    array = ["Forest", "CNN"]
-                    dpg.add_combo(array, default_value=array[1])
-
-                    
+                # # SETTINGS WINDOW
+                # dpg.add_text("Settings")
+                # dpg.add_child_window(tag="settings_window", autosize_x=True, height=35)
+                # with dpg.group(horizontal=True, parent="settings_window"):
+                #     dpg.add_text("AI Model : ")
+                #     array = ["Forest", "CNN"]
+                #     dpg.add_combo(array, default_value=array[1])
+             
     # GENERAL SETTINGS OF GUI
     dpg.create_viewport(title='HSI GUI', width=700, height=630)
     dpg.setup_dearpygui()

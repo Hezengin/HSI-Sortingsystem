@@ -57,7 +57,8 @@ def load_roi(crop_path):
     for filename in os.listdir(crop_path):
             if "roi" in filename and filename.endswith(".npy"):
                 filepath = os.path.join(crop_path, filename)
-                return filepath  
+                cube = np.load(filepath)
+                return cube
 
     raise FileNotFoundError("Geen ROI .npy-bestanden gevonden in de map.")
 

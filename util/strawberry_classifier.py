@@ -10,13 +10,12 @@ import os
 import random
 from collections import Counter
 
-# import camera.camera_helper as camera_helper
-# import util.datacube_extractor as datacube_extractor
-# import util.roi_extractor as roi_extractor
+import camera.camera_helper as camera_helper
+import util.datacube_extractor as datacube_extractor
+import util.roi_extractor as roi_extractor
 
 from torch.utils.tensorboard import SummaryWriter
 import datetime
-
 
 class HSIClassifier:
     """Main class for HSI classification with separate training and inference capabilities."""
@@ -236,15 +235,15 @@ def load_cube(file_path):
     except Exception as e:
         raise ValueError(f"Error loading cube from {file_path}: {e}")
 
- # Gets ROI from ui and sends prediction to ui
-# def call_prediction(ui_context, dpg, crop_path):
-#     dpg = ui_context["dpg"]
-#     save_path = datacube_extractor.extractor(ui_context, crop_path)
-#     cube = roi_extractor.load_roi(save_path)
+# Gets ROI from ui and sends prediction to ui
+def call_prediction(ui_context, dpg, crop_path):
+    dpg = ui_context["dpg"]
+    save_path = datacube_extractor.extractor(ui_context, crop_path)
+    cube = roi_extractor.load_roi(save_path)
        
-#     model_path = "Resources\best_hsi_model.pth"
-#     pred, certainty = make_prediction(cube=cube, model_path=model_path)
-#     dpg.configure_item("ai_result", default_value=f"The result of the classification is: {pred} with a certainty of {certainty}.")
+    model_path = r"Resources\best_hsi_model.pth"
+    pred, certainty = make_prediction(cube=cube, model_path=model_path)
+    dpg.configure_item("ai_result", default_value=f"The result of the classification is: {pred} with a certainty of {certainty}.")
 
 
  
@@ -275,73 +274,70 @@ def make_prediction(cube, model_path):
         
     return pred, certainty
 
+# if __name__ == "__main__":
+#     # test_crop_path = r"Cropped_20250509_151112\crop_000_roi_06.npy"  # or whatever input your extractor expects\
+#     # cube = load_cube(test_crop_path)
+#     # make_prediction(cube=cube)
 
+#     #region Training
+#     # folders_day_0 = [r"C:\Users\moust\projects\AI trainen\Datacubes\03_06_2025\Cropped_03062025_152045",]
+#     # folders_day_1 = [r"C:\Users\moust\projects\AI trainen\Datacubes\04_06_2025\Cropped_04062025_133054", 
+#     #                  r"C:\Users\moust\projects\AI trainen\Datacubes\04_06_2025\Cropped_04062025_133942",
+#     #                  r"C:\Users\moust\projects\AI trainen\Datacubes\04_06_2025\Cropped_04062025_134921"
+#     #                  ]
+#     # folders_day_2 = [r"C:\Users\moust\projects\AI trainen\Datacubes\05_06_2025\Cropped_05062025_120810",
+#     #                  r"C:\Users\moust\projects\AI trainen\Datacubes\05_06_2025\Cropped_05062025_120856",
+#     #                  r"C:\Users\moust\projects\AI trainen\Datacubes\05_06_2025\Cropped_05062025_121305"
+#     #                 ]
 
-
-if __name__ == "__main__":
-    # test_crop_path = r"Cropped_20250509_151112\crop_000_roi_06.npy"  # or whatever input your extractor expects\
-    # cube = load_cube(test_crop_path)
-    # make_prediction(cube=cube)
-
-    #region Training
-    # folders_day_0 = [r"C:\Users\moust\projects\AI trainen\Datacubes\03_06_2025\Cropped_03062025_152045",]
-    # folders_day_1 = [r"C:\Users\moust\projects\AI trainen\Datacubes\04_06_2025\Cropped_04062025_133054", 
-    #                  r"C:\Users\moust\projects\AI trainen\Datacubes\04_06_2025\Cropped_04062025_133942",
-    #                  r"C:\Users\moust\projects\AI trainen\Datacubes\04_06_2025\Cropped_04062025_134921"
-    #                  ]
-    # folders_day_2 = [r"C:\Users\moust\projects\AI trainen\Datacubes\05_06_2025\Cropped_05062025_120810",
-    #                  r"C:\Users\moust\projects\AI trainen\Datacubes\05_06_2025\Cropped_05062025_120856",
-    #                  r"C:\Users\moust\projects\AI trainen\Datacubes\05_06_2025\Cropped_05062025_121305"
-    #                 ]
-
-    def load_npy_files(folder):
-        # Alleen .npy files die 'roi' in de naam hebben
-        # files = [f for f in os.listdir(folder) if f.endswith('.npy')]
-        files = [f for f in os.listdir(folder) if f.endswith('.npy') and 'roi' in f.lower()]
-        data = []
-        for file in files:
-            file_path = os.path.join(folder, file)
-            cube = np.load(file_path)
-            cube = np.clip(cube, 0, 4095)  # Clip values between 0 and 4095
-            data.append(cube)
-            print(f"Loaded {file} from {folder} with shape {cube.shape}")
-        return data
+#     def load_npy_files(folder):
+#         # Alleen .npy files die 'roi' in de naam hebben
+#         # files = [f for f in os.listdir(folder) if f.endswith('.npy')]
+#         files = [f for f in os.listdir(folder) if f.endswith('.npy') and 'roi' in f.lower()]
+#         data = []
+#         for file in files:
+#             file_path = os.path.join(folder, file)
+#             cube = np.load(file_path)
+#             cube = np.clip(cube, 0, 4095)  # Clip values between 0 and 4095
+#             data.append(cube)
+#             print(f"Loaded {file} from {folder} with shape {cube.shape}")
+#         return data
     
     
-    # cubes_day_0, cubes_day_1, cubes_day_2 = [], [], []
+#     # cubes_day_0, cubes_day_1, cubes_day_2 = [], [], []
 
-    # # Load data from the specified folders
-    # for folder in folders_day_0:
-    #     cubes_day_0.extend(load_npy_files(folder))
-    # for folder in folders_day_1:
-    #     cubes_day_1.extend(load_npy_files(folder))
-    # for folder in folders_day_2:
-    #     cubes_day_2.extend(load_npy_files(folder))
-    # # Cube dimensions: (width, bands, height)
+#     # # Load data from the specified folders
+#     # for folder in folders_day_0:
+#     #     cubes_day_0.extend(load_npy_files(folder))
+#     # for folder in folders_day_1:
+#     #     cubes_day_1.extend(load_npy_files(folder))
+#     # for folder in folders_day_2:
+#     #     cubes_day_2.extend(load_npy_files(folder))
+#     # # Cube dimensions: (width, bands, height)
     
-    # labels_day_0 = [0] * len(cubes_day_0)
-    # labels_day_1 = [1] * len(cubes_day_1)
-    # labels_day_2 = [2] * len(cubes_day_2)
+#     # labels_day_0 = [0] * len(cubes_day_0)
+#     # labels_day_1 = [1] * len(cubes_day_1)
+#     # labels_day_2 = [2] * len(cubes_day_2)
 
-    # # Combine all cubes and labels
-    # all_cubes = cubes_day_0 + cubes_day_1 + cubes_day_2
-    # all_labels = labels_day_0 + labels_day_1 + labels_day_2
+#     # # Combine all cubes and labels
+#     # all_cubes = cubes_day_0 + cubes_day_1 + cubes_day_2
+#     # all_labels = labels_day_0 + labels_day_1 + labels_day_2
     
     
-    # classifier = HSIClassifier(num_classes=3)
-    # classifier.train(all_cubes, all_labels, 300, 0.2, 128)
+#     # classifier = HSIClassifier(num_classes=3)
+#     # classifier.train(all_cubes, all_labels, 300, 0.2, 128)
     
-    # print("Finished training")
-    #endregion
+#     # print("Finished training")
+#     #endregion
     
-    test_path = r"C:\Users\moust\projects\AI trainen\Datacubes\04_06_2025\Cropped_04062025_133942"  # or whatever input your extractor expects\
-    cubes = load_npy_files(test_path)
+#     test_path = r"C:\Users\moust\projects\AI trainen\Datacubes\04_06_2025\Cropped_04062025_133942"  # or whatever input your extractor expects\
+#     cubes = load_npy_files(test_path)
 
 
-    classifier = HSIClassifier(num_classes=3)
+#     classifier = HSIClassifier(num_classes=3)
     
     
-    for cube in cubes:
-        pred, certainty = make_prediction(cube, "best_hsi_model.pth")
-        with open("prediction_log.txt", "a") as log_file:
-            log_file.write(f"Prediction: {pred}, Certainty: {certainty:.4f}\n")
+#     for cube in cubes:
+#         pred, certainty = make_prediction(cube, "best_hsi_model.pth")
+#         with open("prediction_log.txt", "a") as log_file:
+#             log_file.write(f"Prediction: {pred}, Certainty: {certainty:.4f}\n")
