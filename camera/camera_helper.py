@@ -4,8 +4,11 @@ import threading
 import numpy as np
 from datetime import datetime
 from util.log_levels import LogLevel
+from util.gcode_sender import ConveyorBeltConnection
 
 # === Camera Operation Functions ===
+
+conveyor = None
 
 def init_cam_parameters(ui_context, frame_rate=30.0, exposure_time=30000.0, r=100, g=120, b=140, binning_type="BinningHorizontal", binning=2):
     """Initializes camera parameters including preview bands and acquisition settings."""
@@ -20,6 +23,7 @@ def init_cam_parameters(ui_context, frame_rate=30.0, exposure_time=30000.0, r=10
     ui_context["log_func"](LogLevel.INFO,f"Camera initialized with parameters: FPS: {frame_rate} , EXP time: {exposure_time}, RGB: {r}, {g}, {b}")
 
 def start_datacube(ui_context, preview=True):
+    global conveyor
     init_cam_parameters(ui_context, 15.0, 60000.0, 100, 120, 140, "BinningHorizontal", 2)
     cam = ui_context["camera_data"].get("cam")
     if not cam:
@@ -30,15 +34,21 @@ def start_datacube(ui_context, preview=True):
         cam.show_preview()
     
     cam.start_acquire(record=True)
+    conveyor = ConveyorBeltConnection(port="COM5", baudrate=115200)
+    conveyor.send_gcode("M310 1\n")
+    conveyor.send_gcode("M311 -10\n")
     ui_context["log_func"](LogLevel.INFO,"Stream opened and data acquisition started.")
 
 def stop_datacube(ui_context):
+    global conveyor
     cam = ui_context["camera_data"].get("cam")
     if not cam:
         ui_context["log_func"](LogLevel.ERROR,"No camera found in UI context.")
         return
 
     cube = cam.stop_acquire()
+    if conveyor is not None:
+        conveyor.send_gcode("M311 0\n")
 
     # Prepare directory paths
     folder = "Datacubes"
