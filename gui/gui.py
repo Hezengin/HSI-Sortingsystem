@@ -113,16 +113,22 @@ def run_gui():
                 dpg.bind_item_font(classification_header, large_font)
 
                 dpg.add_text("Make a scan")
-                dpg.add_child_window(tag="scan_window", autosize_x=True, height=130)
+                dpg.add_child_window(tag="scan_window", autosize_x=True, height=180)
                 with dpg.group(horizontal=False, parent="scan_window"):
                     dpg.add_text("Things to look out for:")
                     dpg.add_text("- Make sure the strawberry is on one end of the conveyor belt and the camera is connected.")
                     dpg.add_text("- While making a scan be sure to start it in a closed environment for the best scan.")
                     dpg.add_text("- The result will be one of the following fresh, old or spoiled.")
-                    with dpg.group(horizontal=True):
-                        dpg.add_button(label="Start Scan", callback=lambda: camera_helper.start_datacube(ui_context, True))
-                        dpg.add_button(label="Stop Scan", callback=lambda: camera_helper.stop_datacube(ui_context))
-                        dpg.add_button(label="Classificate", callback=lambda: strawberry_classifier.call_prediction(ui_context, dpg, r"DataCubes\05_06_2025\dc_05062025_120856.npy"))  # TODO
+                    dpg.add_spacer()
+                    with dpg.group(horizontal=False):
+                        with dpg.group(horizontal=True):
+                            dpg.add_button(label="Start Scan", callback=lambda: camera_helper.start_datacube(ui_context, True))
+                            dpg.add_button(label="Stop Scan", callback=lambda: camera_helper.stop_datacube(ui_context))
+                        with dpg.group(horizontal=True, ):
+                            dpg.add_text("Select a datacube to classify: ")
+                            dpg.add_combo(datacube_getter_for_extractor(), tag="ai_datacubes_extractor_combobox", width=275, default_value=datacube_getter_for_extractor()[0])
+                            dpg.add_button(label="Refresh",tag="ai_refresh_extractor" , callback=lambda: refresh_comboboxes())
+                    dpg.add_button(label="Classificate", callback=lambda: strawberry_classifier.call_prediction(ui_context, dpg, dpg.get_value("ai_datacubes_extractor_combobox")))
 
                 # RESULT WINDOW
                 dpg.add_text("Result")
