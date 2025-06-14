@@ -179,5 +179,5 @@ cython_debug/
 .pypirc
 
 Datacubes/
-Pictures/
 runs/
+Pictures/
