@@ -241,7 +241,11 @@ def call_prediction(ui_context, dpg, crop_path):
        
     model_path = r"Resources\best_hsi_model.pth"
     pred, certainty = make_prediction(cube=cube, model_path=model_path)
-    dpg.configure_item("ai_result", default_value=f"The result of the classification is: {pred} with a certainty of {certainty}.")
+
+    labels = {0: "fresh", 1: "old", 2: "spoiled"}
+    pred_label = labels.get(pred, "unknown")
+
+    dpg.configure_item("ai_result", default_value=f"The result of the classification is: {pred_label} with a certainty of {certainty:.2f}.")
 
 ## Takes in a cube (5 pixels x 224 bands x 5 bands) and uses a 3D CNN to classify whether
 def make_prediction(cube, model_path):
