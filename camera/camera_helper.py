@@ -8,7 +8,7 @@ from util.gcode_sender import ConveyorBeltConnection
 
 # === Camera Operation Functions ===
 
-conveyor = None
+conveyor = ConveyorBeltConnection(port="COM5", baudrate=115200)
 
 def init_cam_parameters(ui_context, frame_rate=30.0, exposure_time=30000.0, r=100, g=120, b=140, binning_type="BinningHorizontal", binning=2):
     """Initializes camera parameters including preview bands and acquisition settings."""
@@ -34,7 +34,6 @@ def start_datacube(ui_context, preview=True):
         cam.show_preview()
     
     cam.start_acquire(record=True)
-    conveyor = ConveyorBeltConnection(port="COM5", baudrate=115200)
     conveyor.send_gcode("M310 1\n")
     conveyor.send_gcode("M311 -10\n")
     ui_context["log_func"](LogLevel.INFO,"Stream opened and data acquisition started.")

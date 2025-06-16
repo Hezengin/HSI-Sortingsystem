@@ -187,3 +187,4 @@ def refresh_comboboxes():
     dpg.configure_item("datacubes_combobox", items=new_items)
     new_items = datacube_getter_for_extractor()
     dpg.configure_item("datacubes_extractor_combobox", items=new_items)
+    dpg.configure_item("ai_datacubes_extractor_combobox", items = new_items)
