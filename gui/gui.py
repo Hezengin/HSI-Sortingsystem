@@ -7,6 +7,7 @@ import util.image_extractor as image_extractor
 import util.datacube_extractor as datacube_extractor
 import util.roi_extractor as detect_roi
 import util.strawberry_classifier as strawberry_classifier
+import util.conveyorbelt_helper as conveyorbelt_helper
 
 def run_gui():
     
@@ -24,14 +25,20 @@ def run_gui():
     # GUI Window
     dpg.create_context()
     with dpg.window(label="HSI Sorting System", tag="main_window", width=550, height=400, no_resize=True):
-        # TABBAR FOR AI CLASSIFICATION
-        # with dpg.add_tab_bar('tabbar'):
-        #     dpg.add_tab(label="AI Classification"):
-        #         dpg.add_button()
+        
+        # FONTS
+        with dpg.font_registry():
+            large_font = dpg.add_font("Resources/OpenSans-Bold.ttf", 32)
+        
         with dpg.tab_bar():
-            with dpg.tab(label="Main"):
-                # CONNECTION BUTTON AND STATUS 
-                with dpg.group(horizontal=True, tag="connection_group"):
+            with dpg.tab(label="HSI Camera"):
+                hsi_camera_header = dpg.add_text("Hyperspectral Camera")
+                dpg.bind_item_font(hsi_camera_header, large_font)
+                
+                # CONNECTION BUTTON AND STATUS
+                dpg.add_text("Connection")
+                dpg.add_child_window(tag="connection_window", autosize_x=True, height=35)
+                with dpg.group(horizontal=True, tag="connection_group", parent="connection_window"):
                     dpg.add_text(tag="connection_bullet",bullet=True, color=(255,0,0))
                     dpg.add_text("Connection status: Disconnected", tag="status_label")
                     dpg.add_button(label="Connect FX10", tag="connect_button",callback=lambda: camera_connection.connect(ui_context, dpg))
@@ -96,18 +103,7 @@ def run_gui():
                     with dpg.group(horizontal=True):
                         dpg.add_button(label="Show Image", callback=lambda: image_extractor.extract_image(ui_context, dpg.get_value("datacubes_combobox"),dpg.get_value("nm_dropdown"), dpg.get_value("cmap_dropdown")))
                         dpg.add_button(label="Save Image", callback=lambda: image_extractor.save_image(ui_context, dpg.get_value("nm_dropdown"), dpg.get_value("cmap_dropdown")))
-                
-                
-                # LOG WINDOW
-                dpg.add_text("Log:")   
-                dpg.add_child_window(tag="log_window", autosize_x=True, height=100)
-                with dpg.group(horizontal=True):
-                    dpg.add_button(label="Clear Log", callback=lambda: clear_log())
-                    dpg.add_button(label="Close App", callback=lambda: camera_helper.close())
-
-            with dpg.font_registry():
-                large_font = dpg.add_font("Resources/OpenSans-Bold.ttf", 32)
-
+            # AI TAB
             with dpg.tab(label="AI Classification"):
                 classification_header = dpg.add_text("Classification")
                 dpg.bind_item_font(classification_header, large_font)
@@ -143,9 +139,30 @@ def run_gui():
                 #     dpg.add_text("AI Model : ")
                 #     array = ["Forest", "CNN"]
                 #     dpg.add_combo(array, default_value=array[1])
+                
+            # CONVEYOR BELT TAB
+            with dpg.tab(label="Conveyor Belt"):
+                conveyorbelt_header = dpg.add_text("Conveyor Belt")
+                dpg.bind_item_font(conveyorbelt_header, large_font)
+                dpg.add_text("Setup Conveyor belt")
+                dpg.add_child_window(tag="conveyorbelt_window", autosize_x=True, height=80)
+                with dpg.group(horizontal=False, parent="conveyorbelt_window"):
+                    dpg.add_text("Select the COM port where the conveyor belt is connected")
+                    with dpg.group(horizontal=True, parent="conveyorbelt_window"):
+                        dpg.add_text("COM port: ")
+                        dpg.add_combo(conveyorbelt_helper.get_comports(), tag="comport_combobox", width=275)                   
+                        dpg.add_button(label="Refresh",tag="comport_refresh" , callback=lambda: refresh_combobox_comport())
+                    dpg.add_button(label="Connect To Conveyor Belt",tag="conveyorbelt_connect_button" , callback=lambda: conveyorbelt_helper.connect_to_conveyor_belt(ui_context, dpg), parent="conveyorbelt_window")
+    
+        # LOG WINDOW
+        dpg.add_text("Log:")   
+        dpg.add_child_window(tag="log_window", autosize_x=True, height=100)
+        with dpg.group(horizontal=True):
+            dpg.add_button(label="Clear Log", callback=lambda: clear_log())
+            dpg.add_button(label="Close App", callback=lambda: camera_helper.close())
              
     # GENERAL SETTINGS OF GUI
-    dpg.create_viewport(title='HSI GUI', width=700, height=630)
+    dpg.create_viewport(title='HSI GUI', width=700, height=710)
     dpg.setup_dearpygui()
     dpg.set_primary_window("main_window", True)
     dpg.show_viewport()
@@ -188,3 +205,10 @@ def refresh_comboboxes():
     new_items = datacube_getter_for_extractor()
     dpg.configure_item("datacubes_extractor_combobox", items=new_items)
     dpg.configure_item("ai_datacubes_extractor_combobox", items = new_items)
+
+def refresh_combobox_comport():
+    dpg.configure_item("comport_combobox", default_value= "")
+    items = conveyorbelt_helper.get_comports()
+    dpg.configure_item("comport_combobox", items= items)
+
+    

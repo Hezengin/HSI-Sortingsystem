@@ -4,11 +4,9 @@ import threading
 import numpy as np
 from datetime import datetime
 from util.log_levels import LogLevel
-from util.gcode_sender import ConveyorBeltConnection
+import util.conveyorbelt_helper as conveyorbelt_helper
 
 # === Camera Operation Functions ===
-
-conveyor = ConveyorBeltConnection(port="COM5", baudrate=115200)
 
 def init_cam_parameters(ui_context, frame_rate=30.0, exposure_time=30000.0, r=100, g=120, b=140, binning_type="BinningHorizontal", binning=2):
     """Initializes camera parameters including preview bands and acquisition settings."""
@@ -23,7 +21,6 @@ def init_cam_parameters(ui_context, frame_rate=30.0, exposure_time=30000.0, r=10
     ui_context["log_func"](LogLevel.INFO,f"Camera initialized with parameters: FPS: {frame_rate} , EXP time: {exposure_time}, RGB: {r}, {g}, {b}")
 
 def start_datacube(ui_context, preview=True):
-    global conveyor
     init_cam_parameters(ui_context, 15.0, 60000.0, 100, 120, 140, "BinningHorizontal", 2)
     cam = ui_context["camera_data"].get("cam")
     if not cam:
