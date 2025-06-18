@@ -97,6 +97,33 @@ The system classifies each strawberry into one of:
 - The predicted category will appear in the Result window.
 - A certainty value will also be shown, indicating the confidence of the AI model.
 
+## 📷 Screenshots
+Below are some screenshots of the system to help you understand the user interface and functionality:
+
+---
+
+### 🔍 Instructions Pop up
+This is the first thing you see when the app starts. It is a pop up with instructions
+![App Start Popup](./screenshots/app-start.png)
+
+---
+
+### 🔬 Hyperspectral Camera Tab
+This is where you connect the HSI camera and manage datacube recording and extraction.
+![Hyperspectral Camera Tab Screenshot](./screenshots/hsi_tab.png)
+
+---
+
+### 🚚 Conveyor Belt Tab
+Connect and control the conveyor belt from this tab.
+![Conveyor Belt Tab Screenshot](./screenshots/conveyor_tab.png)
+
+---
+
+### 🧠 AI Classification Tab
+Make predictions using trained AI to classify strawberries as Fresh, Old, or Spoiled.
+![AI Classification Tab Screenshot](./screenshots/ai_tab.png)
+
 ## 📦 Dependencies
 This project relies on several libraries for machine learning, image processing, and the UI:
 - torch, torchvision, torchaudio
