@@ -193,6 +193,16 @@ The system classifies each strawberry as one of:
                 #     dpg.add_text("AI Model : ")
                 #     array = ["Forest", "CNN"]
                 #     dpg.add_combo(array, default_value=array[1])
+
+        # POP UP INSTRUCTIONS
+        # Instructions popup (auto opens at app start)
+        with dpg.window(label="Instructions", modal=True, show=True, tag="startup_instructions_popup", no_close=True, width=650, height=600):
+            dpg.add_text("Instructions", bullet=True)
+            dpg.add_separator()
+            dpg.add_text(instructions, wrap=560)
+            dpg.add_spacer(height=10)
+            dpg.add_text("You can also find these instructions in the AI Classification Tab")
+            dpg.add_button(label="Got it!", width=100, callback=lambda: dpg.configure_item("startup_instructions_popup", show=False))
                 
         # LOG WINDOW
         dpg.add_text("Log:")   
