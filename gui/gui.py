@@ -31,6 +31,7 @@ def run_gui():
             large_font = dpg.add_font("Resources/OpenSans-Bold.ttf", 32)
         
         with dpg.tab_bar():
+            # HSI CAMERA TAB
             with dpg.tab(label="HSI Camera"):
                 hsi_camera_header = dpg.add_text("Hyperspectral Camera")
                 dpg.bind_item_font(hsi_camera_header, large_font)
@@ -103,28 +104,81 @@ def run_gui():
                     with dpg.group(horizontal=True):
                         dpg.add_button(label="Show Image", callback=lambda: image_extractor.extract_image(ui_context, dpg.get_value("datacubes_combobox"),dpg.get_value("nm_dropdown"), dpg.get_value("cmap_dropdown")))
                         dpg.add_button(label="Save Image", callback=lambda: image_extractor.save_image(ui_context, dpg.get_value("nm_dropdown"), dpg.get_value("cmap_dropdown")))
+            
+            # CONVEYOR BELT TAB
+            with dpg.tab(label="Conveyor Belt"):
+                conveyorbelt_header = dpg.add_text("Conveyor Belt")
+                dpg.bind_item_font(conveyorbelt_header, large_font)
+                dpg.add_text("Setup Conveyor belt")
+                dpg.add_child_window(tag="conveyorbelt_window", autosize_x=True, height=80)
+                with dpg.group(horizontal=False, parent="conveyorbelt_window"):
+                    dpg.add_text("Select the COM port where the conveyor belt is connected")
+                    with dpg.group(horizontal=True, parent="conveyorbelt_window"):
+                        dpg.add_text("COM port: ")
+                        dpg.add_combo(conveyorbelt_helper.get_comports(), tag="comport_combobox", width=275)                   
+                        dpg.add_button(label="Refresh",tag="comport_refresh" , callback=lambda: refresh_combobox_comport())
+                    dpg.add_button(label="Connect To Conveyor Belt",tag="conveyorbelt_connect_button" , callback=lambda: conveyorbelt_helper.connect_to_conveyor_belt(ui_context, dpg), parent="conveyorbelt_window")
+            
             # AI TAB
             with dpg.tab(label="AI Classification"):
                 classification_header = dpg.add_text("Classification")
                 dpg.bind_item_font(classification_header, large_font)
 
-                dpg.add_text("Make a scan")
-                dpg.add_child_window(tag="scan_window", autosize_x=True, height=180)
-                with dpg.group(horizontal=False, parent="scan_window"):
-                    dpg.add_text("Things to look out for:")
-                    dpg.add_text("- Make sure the strawberry is on one end of the conveyor belt and the camera is connected.")
-                    dpg.add_text("- While making a scan be sure to start it in a closed environment for the best scan.")
-                    dpg.add_text("- The result will be one of the following fresh, old or spoiled.")
-                    dpg.add_spacer()
-                    with dpg.group(horizontal=False):
-                        with dpg.group(horizontal=True):
-                            dpg.add_button(label="Start Scan", callback=lambda: camera_helper.start_datacube(ui_context, True))
-                            dpg.add_button(label="Stop Scan", callback=lambda: camera_helper.stop_datacube(ui_context))
-                        with dpg.group(horizontal=True, ):
-                            dpg.add_text("Select a datacube to classify: ")
-                            dpg.add_combo(datacube_getter_for_extractor(), tag="ai_datacubes_extractor_combobox", width=275, default_value=datacube_getter_for_extractor()[0])
-                            dpg.add_button(label="Refresh",tag="ai_refresh_extractor" , callback=lambda: refresh_comboboxes())
-                    dpg.add_button(label="Classificate", callback=lambda: strawberry_classifier.call_prediction(ui_context, dpg, dpg.get_value("ai_datacubes_extractor_combobox")))
+                dpg.add_text("Instructions")
+                dpg.add_child_window(tag="instructions_window", autosize_x=True, height=180)
+                with dpg.group(horizontal=False, parent="instructions_window"):
+                    # INSTRUCTIONS POPUP
+                    with dpg.group(label="Instructions", horizontal=False, show=True, tag="instructions_popup"):
+                        dpg.add_text("Instructions for Making a Classification", bullet=True)
+                        
+                        instructions = """
+1. Prediction Categories
+The system classifies each strawberry as one of:
+- Fresh
+- Old
+- Spoiled
+
+2. Preparing the System
+- Connect to the camera: press "Connect to FX10" in HSI Camera Tab
+- Connect to the conveyor belt: select the device in the dropdown and press "Connect to Conveyor Belt" in Conveyor Belt Tab
+
+3. Placing the Strawberry
+- Place a strawberry at the start of the conveyor belt, under the camera.
+
+4. Environment Setup
+- Close the curtains or blinds.
+- Avoid direct light or reflections.
+
+5. Start the Scan
+- Press the 'Start Scan' button to begin scanning.
+
+6. Stop the Scan
+- Press 'Stop Scan' when the strawberry has been fully scanned.
+
+7. Selecting the Datacube
+- Refresh the dropdown menu after making a scan by pressing the 'Refresh' button.
+- Select the datacube to predict from the dropdown menu.
+
+8. Classify the Result
+- Press 'Classificate' to make a prediction.
+- The result will be shown in the 'Result window'.
+- The certainty value indicates how confident the AI is in its prediction.
+                    """
+
+                        dpg.add_text(instructions, wrap=0)
+                    
+                dpg.add_spacer()
+                dpg.add_text("Make a Classification")
+                dpg.add_child_window(tag="classification_window", autosize_x=True, height=90)
+                with dpg.group(horizontal=False, parent="classification_window"):
+                    with dpg.group(horizontal=True):
+                        dpg.add_button(label="Start Scan", callback=lambda: camera_helper.start_datacube(ui_context, True))
+                        dpg.add_button(label="Stop Scan", callback=lambda: camera_helper.stop_datacube(ui_context))
+                    with dpg.group(horizontal=True, ):
+                        dpg.add_text("Select a datacube to classify: ")
+                        dpg.add_combo(datacube_getter_for_extractor(), tag="ai_datacubes_extractor_combobox", width=275, default_value=datacube_getter_for_extractor()[0])
+                        dpg.add_button(label="Refresh",tag="ai_refresh_extractor" , callback=lambda: refresh_comboboxes())
+                    dpg.add_button(label="Classificate", callback=lambda: strawberry_classifier.call_prediction(ui_context, dpg, dpg.get_value("ai_datacubes_extractor_combobox")))    
 
                 # RESULT WINDOW
                 dpg.add_text("Result")
@@ -140,20 +194,6 @@ def run_gui():
                 #     array = ["Forest", "CNN"]
                 #     dpg.add_combo(array, default_value=array[1])
                 
-            # CONVEYOR BELT TAB
-            with dpg.tab(label="Conveyor Belt"):
-                conveyorbelt_header = dpg.add_text("Conveyor Belt")
-                dpg.bind_item_font(conveyorbelt_header, large_font)
-                dpg.add_text("Setup Conveyor belt")
-                dpg.add_child_window(tag="conveyorbelt_window", autosize_x=True, height=80)
-                with dpg.group(horizontal=False, parent="conveyorbelt_window"):
-                    dpg.add_text("Select the COM port where the conveyor belt is connected")
-                    with dpg.group(horizontal=True, parent="conveyorbelt_window"):
-                        dpg.add_text("COM port: ")
-                        dpg.add_combo(conveyorbelt_helper.get_comports(), tag="comport_combobox", width=275)                   
-                        dpg.add_button(label="Refresh",tag="comport_refresh" , callback=lambda: refresh_combobox_comport())
-                    dpg.add_button(label="Connect To Conveyor Belt",tag="conveyorbelt_connect_button" , callback=lambda: conveyorbelt_helper.connect_to_conveyor_belt(ui_context, dpg), parent="conveyorbelt_window")
-    
         # LOG WINDOW
         dpg.add_text("Log:")   
         dpg.add_child_window(tag="log_window", autosize_x=True, height=100)
@@ -210,5 +250,3 @@ def refresh_combobox_comport():
     dpg.configure_item("comport_combobox", default_value= "")
     items = conveyorbelt_helper.get_comports()
     dpg.configure_item("comport_combobox", items= items)
-
-    

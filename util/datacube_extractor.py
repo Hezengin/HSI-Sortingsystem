@@ -72,4 +72,3 @@ def generate_rgb_composite(data_cube, bands, red_range=(620, 750), green_range=(
     gamma = 1.5
     rgb_composite = np.power(rgb_norm, 1 / gamma)
     return rgb_composite
-
