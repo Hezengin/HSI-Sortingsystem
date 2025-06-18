@@ -104,7 +104,7 @@ Below are some screenshots of the system to help you understand the user interfa
 
 ### 🔍 Instructions Pop up
 This is the first thing you see when the app starts. It is a pop up with instructions
-![App Start Popup](./screenshots/app-start.png)
+![App Start Popup](./screenshots/app_start.png)
 
 ---
 
