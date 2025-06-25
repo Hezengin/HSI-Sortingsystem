@@ -23,6 +23,7 @@ def init_cam_parameters(ui_context, frame_rate=30.0, exposure_time=30000.0, r=10
 def start_datacube(ui_context, preview=True):
     init_cam_parameters(ui_context, 15.0, 60000.0, 100, 120, 140, "BinningHorizontal", 2)
     cam = ui_context["camera_data"].get("cam")
+    conveyor = ui_context.get("conveyor")
     if not cam:
         ui_context["log_func"](LogLevel.ERROR,"No camera found in UI context.")
         return
@@ -36,8 +37,8 @@ def start_datacube(ui_context, preview=True):
     ui_context["log_func"](LogLevel.INFO,"Stream opened and data acquisition started.")
 
 def stop_datacube(ui_context):
-    global conveyor
     cam = ui_context["camera_data"].get("cam")
+    conveyor = ui_context.get("conveyor")
     if not cam:
         ui_context["log_func"](LogLevel.ERROR,"No camera found in UI context.")
         return

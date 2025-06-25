@@ -18,6 +18,7 @@ def run_gui():
     ui_context = {
         "dpg": dpg,
         "camera_data": camera_data,
+        "conveyor": None,
         "set_connection_status": set_connection_status,
         "log_func": log_message
     }
