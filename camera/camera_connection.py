@@ -1,5 +1,5 @@
-from lib.spectralcam.gentl.gentl import GCSystem
-from lib.spectralcam.specim.fx10 import FX10
+from spectralcam.gentl.gentl import GCSystem
+from spectralcam.specim.fx10 import FX10
 from util.log_levels import LogLevel
 
 def connect(ui_context, dpg):

@@ -242,13 +242,13 @@ import glob
 
 # This must be only whole datacube not crops, since the naming starts with data_cube we can filter by name.
 def datacube_getter_for_extractor():
-    list = sorted(glob.glob('DataCubes/**/dc_**.npy'))
-    return list
+    files = sorted(glob.glob('DataCubes/**/dc_**.npy'))
+    return files if files else [""]
 
 # Gets the datacubes list from files and put them in a list for combobox to view
 def datacube_getter():
-    list = sorted(glob.glob('DataCubes/**/*.npy', recursive=True))
-    return list
+    files = sorted(glob.glob('DataCubes/**/*.npy', recursive=True))
+    return files if files else [""]
 
 def refresh_comboboxes():
     new_items = datacube_getter()
