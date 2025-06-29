@@ -113,6 +113,12 @@ HSI-Sortingsystem/
 └── README.md             # Documentation
 ```
 
+### Architecture
+
+Below is a class diagram of the system.
+
+![Class diagram of HSI-Sorteersysteem](./screenshots/ClassDiagram.png)
+
 ## 🔍 Using the Classification Software
 Follow these steps to scan and classify strawberries using the graphical user interface:
 
