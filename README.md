@@ -50,8 +50,6 @@ HSI-Sortingsystem/
 ├── camera/               # Camera Interface
 ├── gui/                  # UI components
 ├── util/                 # Helper scripts
-├── lib/                  # Used Libraries
-  ├── spectralcam/                 # Lbrary to use Specim Camera's
 ├── miscellaneous/        # Miscelanneous/ test files 
 ├── DataCubes/            # Datacube files and results
 ├── Resources/            # AI model, fonts
