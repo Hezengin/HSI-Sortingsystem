@@ -1,6 +1,6 @@
 # HSI Sorting System
 
-A hyperspectral imaging (HSI) based sorting system for strawberries. This project classifies strawberries into three categories based on their freshness: **Fresh**, **Old**, and **Spoiled**. It uses a hyperspectral camera (Specim FX10), a conveyor belt system (Desktop Conveyor - Delta X Robot), and a machine learning model to make real-time predictions through a graphical user interface.
+A hyperspectral imaging (HSI) based sorting system for biological products. This project classifies (for now only) strawberries into three categories based on their freshness: **Fresh**, **Old**, and **Spoiled**. It uses a hyperspectral camera (Specim FX10), a conveyor belt system (Desktop Conveyor - Delta X Robot), and a machine learning model to make real-time predictions through a graphical user interface.
 
 ---
 
@@ -30,29 +30,29 @@ Download the required repositories:
 * `HSI-Sortingsystem` contains the main code.
 * `linear-scanner-controller` contains the SpectralCam library.
 
-```bash
-git clone [https://github.com/Hezengin/HSI-Sortingsystem.git](https://github.com/Hezengin/HSI-Sortingsystem.git)
-git clone [https://gitlab.jyu.fi/jpasonen/linear-scanner-controller.git](https://gitlab.jyu.fi/jpasonen/linear-scanner-controller.git)
+```
+git clone https://github.com/Hezengin/HSI-Sortingsystem.git
+git clone https://gitlab.jyu.fi/jpasonen/linear-scanner-controller.git
 ```
 
 ### 3. Install Miniconda
 
 * **Windows** (via Command Prompt):
-    ```powershell
-    curl [https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe](https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe) --output %USERPROFILE%\Downloads\Miniconda3.exe
+    ```
+    curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe --output %USERPROFILE%\Downloads\Miniconda3.exe
     shell "%USERPROFILE%\Downloads\Miniconda3.exe"
     ```
 
 * **Linux** (via Terminal):
-    ```bash
-    wget [https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh](https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh)
+    ```
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
     bash Miniconda3-latest-Linux-x86_64.sh
     ```
 Then, restart the terminal to complete the installation.
 
 ### 4. Create & Activate Conda Environment
 Create a new Conda environment with Python 3.10 and activate it.
-```bash
+```
 conda create -n hsi_env python=3.10
 conda activate hsi_env
 ```
@@ -60,7 +60,7 @@ conda activate hsi_env
 ### 5. SpectralCam Installation
 Install the `spectralcam` library from the locally cloned `linear-scanner-controller` repository. Adjust the path below based on your system.
 
-```bash
+```
 # Example for Windows
 pip install C:\path\to\your\projects\linear-scanner-controller\spectralcam\
 
@@ -70,17 +70,17 @@ pip install /home/username/projects/linear-scanner-controller/spectralcam/
 
 ### 6. Install PyTorch
 **With GPU support (CUDA 11.8):**
-  ```bash
+  ```
   pip install torch torchvision torchaudio --index-url [https://download.pytorch.org/whl/cu118](https://download.pytorch.org/whl/cu118)
   ```
 
 ### 7. Install Dependencies
 Navigate to the `HSI-Sortingsystem` directory in your terminal and install the required packages using `pip`.
-```bash
+```
 pip install -r requirements.txt
 ```
 If any packages are missing after the installation, install them manually. For example:
-```bash
+```
 pip install dearpygui psutil
 ```
 
@@ -91,13 +91,13 @@ pip install dearpygui psutil
 
 ### 9. Start the Application
 Start the application from the terminal (ensure you are in the `HSI-Sortingsystem` directory and the `hsi_env` environment is active).
-```bash
+```
 python main.py
 ```
 If everything is installed correctly, the GUI will start without any issues.
 
 ## 📁 Project Structure
-```bash
+```
 HSI-Sortingsystem/
 ├── main.py               # Entry point for the UI and logic
 ├── camera/               # Camera Interface
